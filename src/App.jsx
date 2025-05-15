@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { gsap } from 'gsap';
 import emailjs from '@emailjs/browser';
 import VanillaTilt from 'vanilla-tilt';
@@ -47,6 +47,7 @@ function App() {
 
     function initWebGL() {
       // Scene setup
+      console.log('Setting up WebGL scene');
       scene = new THREE.Scene();
       scene.background = null; // Ensure transparent background
       camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -103,7 +104,7 @@ function App() {
         let animationTimer = 0;
         let animationPhase = 0; // 0=flow field, 1=forming car, 2=car complete
         let finalShapeComplete = false;
-        const transitionTime = 10000; // 10 seconds in milliseconds
+        const transitionTime = 6000; // 6 seconds in milliseconds
         
         // Create particle geometry and material
         const particleGeometry = new THREE.BufferGeometry();
@@ -329,11 +330,19 @@ function App() {
           // Update animation timer
           animationTimer += 16; // ~16ms per frame
           
-          // Check if we should switch to car formation after 10 seconds
+          // Check if we should switch to car formation after 6 seconds
           if (animationPhase === 0 && animationTimer >= transitionTime) {
-            console.log("10 seconds elapsed, transitioning to car formation");
+            console.log("6 seconds elapsed, transitioning to car formation");
             animationTimer = 0;
             startCarFormation();
+          }
+          
+          // Check if we should switch to phase 3 (6 seconds after car is complete)
+          if (animationPhase === 2 && finalShapeComplete && animationTimer >= transitionTime) {
+            console.log("Starting phase 3 animation");
+            animationTimer = 0;
+            animationPhase = 3;
+            startPhaseThree();
           }
           
           // Handle each animation phase
@@ -454,6 +463,7 @@ function App() {
               console.log("Car formation complete");
               animationPhase = 2;
               finalShapeComplete = true;
+              animationTimer = 0; // Reset timer to track time since car formation completed
             }
             
             // If car is complete, make it drive
@@ -469,48 +479,139 @@ function App() {
               }
             }
           }
+          else if (animationPhase === 3) {
+            // Phase 3: Spiral pattern
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Calculate spiral movement
+              const time = Date.now() * 0.001;
+              const index = i / particles.length;
+              const radius = 20 + 10 * Math.sin(time * 0.2 + index * Math.PI * 2);
+              const angle = index * Math.PI * 20 + time * 0.5;
+              
+              // Update position based on spiral pattern
+              const targetX = Math.cos(angle) * radius;
+              const targetY = Math.sin(angle) * radius;
+              const targetZ = Math.sin(time * 0.3 + index * Math.PI) * 15;
+              
+              // Smoothly interpolate to target position
+              particle.position.x += (targetX - particle.position.x) * 0.03;
+              particle.position.y += (targetY - particle.position.y) * 0.03;
+              particle.position.z += (targetZ - particle.position.z) * 0.03;
+              
+              // Update colors to create rainbow effect
+              const hue = (time * 0.1 + index) % 1;
+              const rgb = hslToRgb(hue, 0.7, 0.5);
+              
+              particleColors[i * 3] = rgb[0];
+              particleColors[i * 3 + 1] = rgb[1];
+              particleColors[i * 3 + 2] = rgb[2];
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions for trails
+              linePositions[i * 6] = particle.lastPosition.x;
+              linePositions[i * 6 + 1] = particle.lastPosition.y;
+              linePositions[i * 6 + 2] = particle.lastPosition.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Rotate the scene for added effect
+            particleSystem.rotation.y += 0.001;
+            particleSystem.rotation.x += 0.0005;
+          }
           
           // Update the geometries
           particleGeometry.attributes.position.needsUpdate = true;
           particleGeometry.attributes.size.needsUpdate = true;
           particleGeometry.attributes.color.needsUpdate = true;
           lineGeometry.attributes.position.needsUpdate = true;
+          
+          // Request the next frame
+          requestAnimationFrame(animateFlow);
+          
+          // Render the scene
+          renderer.render(scene, camera);
         }
         
-        return animateFlow;
-      }
-
-      let animateParticles = createParticleSystem();
-
-      // Animation loop
-      function animate() {
-        requestAnimationFrame(animate);
-
-        // Animate particles
-        animateParticles();
-
-        renderer.render(scene, camera);
-      }
-
-      animate();
-
-      // Handle window resize
-      function handleResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      }
-
-      window.addEventListener('resize', handleResize);
-
-      // Cleanup
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        if (renderer) {
-          renderer.dispose();
-          scene.clear();
+        // Helper function to convert HSL to RGB for smooth color transitions
+        function hslToRgb(h, s, l) {
+          let r, g, b;
+          
+          if (s === 0) {
+            r = g = b = l; // achromatic
+          } else {
+            const hue2rgb = (p, q, t) => {
+              if (t < 0) t += 1;
+              if (t > 1) t -= 1;
+              if (t < 1/6) return p + (q - p) * 6 * t;
+              if (t < 1/2) return q;
+              if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+              return p;
+            };
+            
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+          }
+          
+          return [r, g, b];
         }
-      };
+        
+        // Function to start phase three animation
+        function startPhaseThree() {
+          // Reset particle system position from car phase
+          particleSystem.position.set(0, 0, 0);
+          lines.position.set(0, 0, 0);
+          
+          // Optional: Add a transition effect
+          for (let i = 0; i < particles.length; i++) {
+            // Slightly scatter particles for a nice transition
+            particles[i].position.x += (Math.random() - 0.5) * 5;
+            particles[i].position.y += (Math.random() - 0.5) * 5;
+            particles[i].position.z += (Math.random() - 0.5) * 5;
+          }
+        }
+
+        // Start the animation loop
+        animateFlow();
+
+        // Handle window resize
+        function handleResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        // Return cleanup function
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          if (renderer) {
+            renderer.dispose();
+            scene.clear();
+          }
+        };
+      }
+
+      // Initialize particle system and get cleanup function
+      const cleanup = createParticleSystem();
+
+      // Return cleanup function for useEffect
+      return cleanup;
     }
   }, []);
 
@@ -638,15 +739,15 @@ function App() {
   return (
     <>
       {/* WebGL Background Canvas */}
-      <canvas ref={bgCanvasRef} id="bg-canvas" className="fixed top-0 left-0 w-full h-full z-10 blur-[2px] opacity-70"></canvas>
+      <canvas ref={bgCanvasRef} id="bg-canvas" className="fixed top-0 left-0 w-full h-full -z-5 blur-[2px] opacity-85"></canvas>
 
       {/* Fallback Background for Low-end Devices */}
-      <div id="fallback-bg" className="fixed top-0 left-0 w-full h-full bg-gradient-to-br from-black via-slate-900 to-black -z-10 opacity-30"></div>
+      <div id="fallback-bg" className="fixed top-0 left-0 w-full h-full bg-gradient-to-br from-black via-slate-900 to-black -z-10 opacity-0"></div>
 
       {/* Main Content */}
-      <div id="app" className="relative z-20">
+      <div id="app" className="relative z-30">
         {/* Navigation */}
-        <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-sm bg-primary/70 border-b border-accent-purple/20">
+        <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-primary/50 border-b border-accent-purple/20">
           <div className="container py-4 flex justify-between items-center">
             <div className="text-xl font-bold">
               <span className="text-accent-blue">Nish</span><span className="text-accent-purple">anth</span>
@@ -678,7 +779,7 @@ function App() {
         {/* Hero Section */}
         <section id="home" className="min-h-screen flex items-center pt-16">
           <div className="container">
-            <div className="max-w-2xl">
+            <div className="max-w-2xl p-8 rounded-xl">
               <h1 className="text-4xl md:text-6xl font-bold mb-2">
                 <span className="text-white">Nishanth Chowdary</span>
               </h1>
@@ -699,9 +800,9 @@ function App() {
         {/* About Section */}
         <section id="about" className="py-20">
           <div className="container">
-            <h2 className="section-title">About Me</h2>
+            <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">About Me</h2>
             <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
+              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
                 <p className="text-lg mb-6">
                   I am an AI undergraduate student at Amrita Vishwa Vidyapeetham, Amaravati, passionate about 
                   developing AI-driven solutions for real-world problems. My focus areas include computer vision, 
@@ -711,7 +812,7 @@ function App() {
                   <i className="fas fa-download mr-2"></i> Download Resume
                 </a>
               </div>
-              <div>
+              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
                 <h3 className="text-2xl font-semibold mb-4">Technical Skills</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center">
@@ -767,10 +868,10 @@ function App() {
         {/* Projects Section */}
         <section id="projects" className="py-20 bg-secondary/30">
           <div className="container">
-            <h2 className="section-title">My Projects</h2>
+            <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">My Projects</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {projects.map(project => (
-                <div key={project.id} className="card project-card" data-tilt data-tilt-max="5">
+                <div key={project.id} className="card project-card backdrop-blur-md bg-black/20" data-tilt data-tilt-max="5">
                   <div className={`h-48 rounded-lg mb-4 bg-gradient-to-r ${project.gradient} flex items-center justify-center`}>
                     <i className={`${project.icon} text-6xl`}></i>
                   </div>
@@ -840,9 +941,9 @@ function App() {
         {/* Contact Section */}
         <section id="contact" className="py-20">
           <div className="container">
-            <h2 className="section-title">Get In Touch</h2>
+            <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">Get In Touch</h2>
             <div className="grid md:grid-cols-2 gap-10">
-              <div>
+              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
                 <h3 className="text-2xl font-semibold mb-4">Contact Information</h3>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-4">
@@ -888,7 +989,7 @@ function App() {
                   </a>
                 </div>
               </div>
-              <div>
+              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
                 <h3 className="text-2xl font-semibold mb-4">Send Me a Message</h3>
                 <form ref={contactFormRef} onSubmit={handleSubmit} className="space-y-4">
                   <div>
@@ -918,7 +1019,7 @@ function App() {
         </section>
 
         {/* Footer */}
-        <footer className="py-10 bg-secondary/50 border-t border-accent-purple/10">
+        <footer className="py-10 bg-secondary/50 backdrop-blur-md border-t border-accent-purple/10">
           <div className="container text-center">
             <div className="text-xl font-bold mb-4">
               <span className="text-accent-blue">Nish</span><span className="text-accent-purple">anth</span>
