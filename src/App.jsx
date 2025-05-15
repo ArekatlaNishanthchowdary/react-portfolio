@@ -13,6 +13,11 @@ function App() {
   const contactFormRef = useRef(null);
   const [formStatus, setFormStatus] = useState({ message: '', type: '' });
 
+  // Initialize EmailJS
+  useEffect(() => {
+    emailjs.init("mHOKmkvlGWOsdMT-b")
+  }, []);
+
   // Initialize WebGL background
   useEffect(() => {
     console.log("Initializing WebGL background");
@@ -542,7 +547,14 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setFormStatus({ message: 'Sending...', type: 'info' });
-
+    
+    console.log("Sending email via EmailJS...");
+    console.log("Form data:", {
+      name: contactFormRef.current.name.value,
+      email: contactFormRef.current.email.value,
+      message: contactFormRef.current.message.value.substring(0, 20) + "..."
+    });
+    
     emailjs.sendForm(
       'service_a4cirzr', // Your EmailJS service ID
       'template_b681597', // Your EmailJS template ID
@@ -550,11 +562,16 @@ function App() {
       'mHOKmkvlGWOsdMT-b' // Your EmailJS public key
     )
       .then((result) => {
+        console.log("Email sent successfully:", result.text);
         setFormStatus({ message: 'Message sent successfully!', type: 'success' });
         contactFormRef.current.reset();
       })
       .catch((error) => {
-        setFormStatus({ message: 'Failed to send message. Please try again.', type: 'error' });
+        console.error("EmailJS error:", error);
+        setFormStatus({ 
+          message: `Failed to send message: ${error.text || 'Network error'}. Please try again or contact directly via email.`, 
+          type: 'error' 
+        });
       });
   };
 
@@ -690,7 +707,7 @@ function App() {
                   developing AI-driven solutions for real-world problems. My focus areas include computer vision, 
                   machine learning, and data analysis, with a special interest in safety applications.
                 </p>
-                <a href="#" className="btn btn-primary" download="resume.pdf">
+                <a href="/Resume.pdf" className="btn btn-primary" download>
                   <i className="fas fa-download mr-2"></i> Download Resume
                 </a>
               </div>
