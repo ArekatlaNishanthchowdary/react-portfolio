@@ -345,14 +345,6 @@ function App() {
             startPhaseThree();
           }
           
-          // Check if we should switch to phase 4 (6 seconds after spiral pattern)
-          if (animationPhase === 3 && animationTimer >= transitionTime) {
-            console.log("Starting phase 4 animation");
-            animationTimer = 0;
-            animationPhase = 4;
-            startPhaseFour();
-          }
-          
           // Handle each animation phase
           if (animationPhase === 0) {
             // Flow field phase - particles follow the vector field
@@ -537,95 +529,6 @@ function App() {
             particleSystem.rotation.y += 0.001;
             particleSystem.rotation.x += 0.0005;
           }
-          else if (animationPhase === 4) {
-            // Phase 4: Galaxy formation
-            for (let i = 0; i < particles.length; i++) {
-              const particle = particles[i];
-              
-              // Store previous position for trails
-              particle.lastPosition.copy(particle.position);
-              
-              // Calculate galaxy parameters
-              const time = Date.now() * 0.0005;
-              const index = i / particles.length;
-              
-              // Determine which arm of the galaxy this particle belongs to
-              const armIndex = Math.floor(index * 5); // 5 spiral arms
-              const armOffset = (armIndex / 5) * Math.PI * 2;
-              
-              // Calculate distance from center and angle
-              const distFromCenter = 4 + index * 40; // Gradually increase radius based on particle index
-              const rotation = 4; // Spiral tightness
-              const angle = index * rotation * Math.PI * 2 + time + armOffset;
-              
-              // Calculate position in the spiral arm
-              const galaxyX = Math.cos(angle) * distFromCenter;
-              const galaxyY = Math.sin(angle) * distFromCenter;
-              
-              // Z-position creates thickness of the galaxy, with central bulge
-              const centralBulge = Math.exp(-distFromCenter / 15);
-              const galaxyZ = (Math.random() - 0.5) * 5 * centralBulge;
-              
-              // Apply noise to create more natural galaxy appearance
-              const noise = Math.sin(index * 100 + time) * 2;
-              
-              // Smoothly interpolate to target position
-              particle.position.x += (galaxyX + noise - particle.position.x) * 0.03;
-              particle.position.y += (galaxyY + noise - particle.position.y) * 0.03;
-              particle.position.z += ((galaxyZ * 2) - particle.position.z) * 0.03;
-              
-              // Color particles based on position in galaxy
-              // Center is yellowish, arms are blueish/purplish
-              const distanceRatio = Math.min(1, distFromCenter / 40);
-              
-              // Core (yellow/white)
-              let r = 1.0 - distanceRatio * 0.7;
-              let g = 0.9 - distanceRatio * 0.8;
-              let b = 0.6 + distanceRatio * 0.3;
-              
-              // Add color variation based on arm
-              const armColor = (armIndex % 3);
-              if (armColor === 0) {
-                b += 0.2; // Bluer arm
-              } else if (armColor === 1) {
-                r += 0.1; // Redder arm
-                g -= 0.1;
-              } else {
-                g += 0.1; // Greener arm
-              }
-              
-              // Normalize colors to valid range
-              r = Math.min(1, Math.max(0, r));
-              g = Math.min(1, Math.max(0, g));
-              b = Math.min(1, Math.max(0, b));
-              
-              particleColors[i * 3] = r;
-              particleColors[i * 3 + 1] = g;
-              particleColors[i * 3 + 2] = b;
-              
-              // Make central particles larger
-              particleSizes[i] = particle.size * (1 + centralBulge * 2);
-              
-              // Update position in buffer
-              particlePositions[i * 3] = particle.position.x;
-              particlePositions[i * 3 + 1] = particle.position.y;
-              particlePositions[i * 3 + 2] = particle.position.z;
-              
-              // Update line positions for trails
-              linePositions[i * 6] = particle.lastPosition.x;
-              linePositions[i * 6 + 1] = particle.lastPosition.y;
-              linePositions[i * 6 + 2] = particle.lastPosition.z;
-              linePositions[i * 6 + 3] = particle.position.x;
-              linePositions[i * 6 + 4] = particle.position.y;
-              linePositions[i * 6 + 5] = particle.position.z;
-            }
-            
-            // Rotate the galaxy slowly
-            particleSystem.rotation.z += 0.001;
-            particleSystem.rotation.x = Math.sin(time) * 0.2; // Slight tilt that changes over time
-            lines.rotation.z += 0.001;
-            lines.rotation.x = particleSystem.rotation.x;
-          }
           
           // Update the geometries
           particleGeometry.attributes.position.needsUpdate = true;
@@ -680,37 +583,6 @@ function App() {
             particles[i].position.y += (Math.random() - 0.5) * 5;
             particles[i].position.z += (Math.random() - 0.5) * 5;
           }
-        }
-        
-        // Function to start phase four animation (galaxy)
-        function startPhaseFour() {
-          // Reset particle system position
-          particleSystem.position.set(0, 0, 0);
-          lines.position.set(0, 0, 0);
-          particleSystem.rotation.set(0, 0, 0);
-          lines.rotation.set(0, 0, 0);
-          
-          // Create initial burst effect
-          for (let i = 0; i < particles.length; i++) {
-            // Explode particles outward
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 20;
-            particles[i].position.x = Math.cos(angle) * radius;
-            particles[i].position.y = Math.sin(angle) * radius;
-            particles[i].position.z = (Math.random() - 0.5) * 10;
-            
-            // Reset line positions to match
-            linePositions[i * 6] = particles[i].position.x;
-            linePositions[i * 6 + 1] = particles[i].position.y;
-            linePositions[i * 6 + 2] = particles[i].position.z;
-            linePositions[i * 6 + 3] = particles[i].position.x;
-            linePositions[i * 6 + 4] = particles[i].position.y;
-            linePositions[i * 6 + 5] = particles[i].position.z;
-          }
-          
-          // Update buffers
-          particleGeometry.attributes.position.needsUpdate = true;
-          lineGeometry.attributes.position.needsUpdate = true;
         }
 
         // Start the animation loop
