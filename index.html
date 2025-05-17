@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/react-portfolio/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
     <title>Nishanth Chowdary | Portfolio</title>
@@ -10,12 +10,25 @@
       console.log("Page loading...");
       window.addEventListener('DOMContentLoaded', () => {
         console.log("DOM content loaded");
+        // Check if root element exists
+        const root = document.getElementById('root');
+        if (!root) {
+          console.error("Root element not found!");
+        } else {
+          console.log("Root element found");
+        }
       });
       window.addEventListener('load', () => {
         console.log("All resources loaded");
+        // Check for any failed resources
+        const failedResources = performance.getEntriesByType('resource')
+          .filter(resource => !resource.responseEnd);
+        if (failedResources.length > 0) {
+          console.error("Failed to load resources:", failedResources);
+        }
       });
       window.addEventListener('error', (e) => {
-        console.error("Error detected:", e.message);
+        console.error("Error detected:", e.message, e.filename, e.lineno);
       });
     </script>
   </head>
