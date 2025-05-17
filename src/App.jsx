@@ -540,9 +540,9 @@ function App() {
           requestAnimationFrame(animateFlow);
           
           // Render the scene
-          renderer.render(scene, camera);
-        }
-        
+        renderer.render(scene, camera);
+      }
+
         // Helper function to convert HSL to RGB for smooth color transitions
         function hslToRgb(h, s, l) {
           let r, g, b;
@@ -588,23 +588,23 @@ function App() {
         // Start the animation loop
         animateFlow();
 
-        // Handle window resize
-        function handleResize() {
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+      // Handle window resize
+      function handleResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
 
-        window.addEventListener('resize', handleResize);
+      window.addEventListener('resize', handleResize);
 
         // Return cleanup function
-        return () => {
-          window.removeEventListener('resize', handleResize);
-          if (renderer) {
-            renderer.dispose();
-            scene.clear();
-          }
-        };
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        if (renderer) {
+          renderer.dispose();
+          scene.clear();
+        }
+      };
       }
 
       // Initialize particle system and get cleanup function
@@ -655,7 +655,7 @@ function App() {
       email: contactFormRef.current.email.value,
       message: contactFormRef.current.message.value.substring(0, 20) + "..."
     });
-    
+
     emailjs.sendForm(
       'service_a4cirzr', // Your EmailJS service ID
       'template_b681597', // Your EmailJS template ID
