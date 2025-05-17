@@ -10,16 +10,21 @@
       console.log("Page loading...");
       window.addEventListener('DOMContentLoaded', () => {
         console.log("DOM content loaded");
+        // Check if root element exists
+        const root = document.getElementById('root');
+        if (!root) {
+          console.error("Root element not found!");
+        }
       });
       window.addEventListener('load', () => {
         console.log("All resources loaded");
       });
       window.addEventListener('error', (e) => {
-        console.error("Error detected:", e.message);
+        console.error("Error detected:", e.message, e.filename, e.lineno);
       });
     </script>
-    <script type="module" crossorigin src="/react-portfolio/assets/index-Dl6rmhLX.js"></script>
-    <link rel="stylesheet" crossorigin href="/react-portfolio/assets/index-BRc5yHQ9.css">
+    <script type="module" crossorigin src="./assets/index-Bf1p5_7A.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DtAZ6BRN.css">
   </head>
   <body>
     <div id="root"></div>
