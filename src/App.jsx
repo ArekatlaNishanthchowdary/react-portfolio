@@ -736,6 +736,24 @@ function App() {
     }
   ];
 
+  const socialLinks = [
+    {
+      name: 'GitHub',
+      url: 'https://github.com/ArekatlaNishanthchowdary',
+      icon: 'fab fa-github'
+    },
+    {
+      name: 'LinkedIn',
+      url: 'https://www.linkedin.com/in/nishanth-chowdary-arekatla-4a8b1b1b3/',
+      icon: 'fab fa-linkedin'
+    },
+    {
+      name: 'Twitter',
+      url: 'https://x.com/NishantP4K',
+      icon: 'fab fa-twitter'
+    }
+  ];
+
   return (
     <>
       {/* WebGL Background Canvas */}
@@ -975,18 +993,11 @@ function App() {
                   </div>
                 </div>
                 <div className="mt-8 flex space-x-4">
-                  <a href="https://www.linkedin.com/in/arekatla-nishanth-chowdary-0b4029290/" className="w-10 h-10 rounded-full bg-accent-blue/10 flex items-center justify-center text-accent-blue hover:bg-accent-blue/20 transition-colors" target="_blank" rel="noopener noreferrer">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
-                  <a href="https://github.com/ArekatlaNishanthchowdary" className="w-10 h-10 rounded-full bg-accent-purple/10 flex items-center justify-center text-accent-purple hover:bg-accent-purple/20 transition-colors" target="_blank" rel="noopener noreferrer">
-                    <i className="fab fa-github"></i>
-                  </a>
-                  <a href="#" className="w-10 h-10 rounded-full bg-accent-pink/10 flex items-center justify-center text-accent-pink hover:bg-accent-pink/20 transition-colors">
-                    <i className="fab fa-twitter"></i>
-                  </a>
-                  <a href="#" className="w-10 h-10 rounded-full bg-accent-blue/10 flex items-center justify-center text-accent-blue hover:bg-accent-blue/20 transition-colors">
-                    <i className="fab fa-kaggle"></i>
-                  </a>
+                  {socialLinks.map((link, index) => (
+                    <a key={index} href={link.url} className="w-10 h-10 rounded-full bg-accent-blue/10 flex items-center justify-center text-accent-blue hover:bg-accent-blue/20 transition-colors" target="_blank" rel="noopener noreferrer">
+                      <i className={link.icon}></i>
+                    </a>
+                  ))}
                 </div>
               </div>
               <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
@@ -1026,15 +1037,11 @@ function App() {
             </div>
             <p className="text-gray-400 mb-4">© {new Date().getFullYear()} Nishanth Chowdary. All Rights Reserved.</p>
             <div className="flex justify-center space-x-6">
-              <a href="https://www.linkedin.com/in/arekatla-nishanth-chowdary-0b4029290/" className="text-gray-400 hover:text-accent-blue transition-colors" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-linkedin"></i>
-              </a>
-              <a href="https://github.com/ArekatlaNishanthchowdary" className="text-gray-400 hover:text-accent-purple transition-colors" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-github"></i>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-accent-pink transition-colors">
-                <i className="fab fa-twitter"></i>
-              </a>
+              {socialLinks.map((link, index) => (
+                <a key={index} href={link.url} className="text-gray-400 hover:text-accent-blue transition-colors" target="_blank" rel="noopener noreferrer">
+                  <i className={link.icon}></i>
+                </a>
+              ))}
             </div>
           </div>
         </footer>
