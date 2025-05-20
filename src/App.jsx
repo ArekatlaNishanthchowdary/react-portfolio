@@ -106,6 +106,10 @@ function App() {
         let finalShapeComplete = false;
         const transitionTime = 6000; // 6 seconds in milliseconds
         
+        // Text animation variables
+        let textMessages = [];
+        let textPointsArrays = [];
+        
         // Create particle geometry and material
         const particleGeometry = new THREE.BufferGeometry();
         const particlePositions = new Float32Array(numParticles * 3);
@@ -1192,6 +1196,371 @@ function App() {
             
             // Reset to phase 0 after DNA animation completes
             if (animationTimer >= transitionTime * 2) {
+              console.log("Transitioning to Phase 9: Morphing Geometry");
+              animationTimer = 0;
+              animationPhase = 9;
+              startPhaseNine();
+            }
+          }
+          else if (animationPhase === 9) {
+            // Phase 9: Morphing Geometric Shapes
+            const time = Date.now() * 0.001;
+            
+            // Calculate the current shape transition progress
+            const morphDuration = transitionTime * 0.5; // Duration for each shape
+            const shapeCycle = Math.floor(animationTimer / morphDuration) % 5; // 5 different shapes
+            const morphProgress = (animationTimer % morphDuration) / morphDuration;
+            
+            // Smooth the transition using easing
+            const easedMorphProgress = easeInOutQuad(morphProgress);
+            
+            // Different shape parameters
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Calculate normalized position for this particle (0-1 range)
+              const normalizedIndex = i / particles.length;
+              
+              // Target positions for different shapes
+              let targetX, targetY, targetZ;
+              let nextTargetX, nextTargetY, nextTargetZ;
+              let colorR, colorG, colorB;
+              
+              // Calculate current and next shape positions
+              const currentShape = shapeCycle;
+              const nextShape = (shapeCycle + 1) % 5;
+              
+              // Shape 0: Cube
+              if (currentShape === 0 || nextShape === 0) {
+                // Create a cube
+                const cubeSize = 25;
+                const point3dIndex = i % 8; // 8 corners of a cube
+                const cornerX = ((point3dIndex & 1) ? 1 : -1) * cubeSize;
+                const cornerY = ((point3dIndex & 2) ? 1 : -1) * cubeSize;
+                const cornerZ = ((point3dIndex & 4) ? 1 : -1) * cubeSize;
+                
+                if (currentShape === 0) {
+                  targetX = cornerX;
+                  targetY = cornerY;
+                  targetZ = cornerZ;
+                } else {
+                  nextTargetX = cornerX;
+                  nextTargetY = cornerY;
+                  nextTargetZ = cornerZ;
+                }
+              }
+              
+              // Shape 1: Sphere
+              if (currentShape === 1 || nextShape === 1) {
+                // Create a sphere using spherical coordinates
+                const radius = 25;
+                const phi = Math.acos(2 * ((i / particles.length) * 2 - 1));
+                const theta = 2 * Math.PI * ((i % 100) / 100);
+                
+                const sphereX = radius * Math.sin(phi) * Math.cos(theta);
+                const sphereY = radius * Math.sin(phi) * Math.sin(theta);
+                const sphereZ = radius * Math.cos(phi);
+                
+                if (currentShape === 1) {
+                  targetX = sphereX;
+                  targetY = sphereY;
+                  targetZ = sphereZ;
+                } else {
+                  nextTargetX = sphereX;
+                  nextTargetY = sphereY;
+                  nextTargetZ = sphereZ;
+                }
+              }
+              
+              // Shape 2: Torus
+              if (currentShape === 2 || nextShape === 2) {
+                // Create a torus
+                const torusMajorRadius = 25;
+                const torusMinorRadius = 8;
+                const u = ((i % 50) / 50) * Math.PI * 2;
+                const v = ((Math.floor(i / 50) % 30) / 30) * Math.PI * 2;
+                
+                const torusX = (torusMajorRadius + torusMinorRadius * Math.cos(v)) * Math.cos(u);
+                const torusY = (torusMajorRadius + torusMinorRadius * Math.cos(v)) * Math.sin(u);
+                const torusZ = torusMinorRadius * Math.sin(v);
+                
+                if (currentShape === 2) {
+                  targetX = torusX;
+                  targetY = torusY;
+                  targetZ = torusZ;
+                } else {
+                  nextTargetX = torusX;
+                  nextTargetY = torusY;
+                  nextTargetZ = torusZ;
+                }
+              }
+              
+              // Shape 3: Cone/Pyramid
+              if (currentShape === 3 || nextShape === 3) {
+                // Create a cone/pyramid
+                const coneHeight = 40;
+                const coneBaseRadius = 25;
+                const angle = ((i % 60) / 60) * Math.PI * 2;
+                const heightRatio = (Math.floor(i / 60) % 20) / 20;
+                
+                const coneX = coneBaseRadius * (1 - heightRatio) * Math.cos(angle);
+                const coneY = coneBaseRadius * (1 - heightRatio) * Math.sin(angle);
+                const coneZ = coneHeight * heightRatio - coneHeight/2;
+                
+                if (currentShape === 3) {
+                  targetX = coneX;
+                  targetY = coneY;
+                  targetZ = coneZ;
+                } else {
+                  nextTargetX = coneX;
+                  nextTargetY = coneY;
+                  nextTargetZ = coneZ;
+                }
+              }
+              
+              // Shape 4: Spiral
+              if (currentShape === 4 || nextShape === 4) {
+                // Create a spiral
+                const spiralRadius = 22;
+                const spiralHeight = 40;
+                const spiralTurns = 3;
+                const heightRatio = (i / particles.length);
+                const angle = heightRatio * Math.PI * 2 * spiralTurns;
+                
+                const spiralX = spiralRadius * Math.cos(angle);
+                const spiralY = spiralRadius * Math.sin(angle);
+                const spiralZ = (heightRatio - 0.5) * spiralHeight;
+                
+                if (currentShape === 4) {
+                  targetX = spiralX;
+                  targetY = spiralY;
+                  targetZ = spiralZ;
+                } else {
+                  nextTargetX = spiralX;
+                  nextTargetY = spiralY;
+                  nextTargetZ = spiralZ;
+                }
+              }
+              
+              // If we're in a transition, interpolate between shapes
+              if (currentShape !== nextShape) {
+                const finalTargetX = targetX * (1 - easedMorphProgress) + nextTargetX * easedMorphProgress;
+                const finalTargetY = targetY * (1 - easedMorphProgress) + nextTargetY * easedMorphProgress;
+                const finalTargetZ = targetZ * (1 - easedMorphProgress) + nextTargetZ * easedMorphProgress;
+                
+                // Smooth movement toward target
+                particle.position.x += (finalTargetX - particle.position.x) * 0.08;
+                particle.position.y += (finalTargetY - particle.position.y) * 0.08;
+                particle.position.z += (finalTargetZ - particle.position.z) * 0.08;
+              } else {
+                // Direct movement when not transitioning
+                particle.position.x += (targetX - particle.position.x) * 0.08;
+                particle.position.y += (targetY - particle.position.y) * 0.08;
+                particle.position.z += (targetZ - particle.position.z) * 0.08;
+              }
+              
+              // Add slight jitter for more organic movement
+              particle.position.x += (Math.random() - 0.5) * 0.1;
+              particle.position.y += (Math.random() - 0.5) * 0.1;
+              particle.position.z += (Math.random() - 0.5) * 0.1;
+              
+              // Color based on shape and position
+              const hue = (time * 0.1 + normalizedIndex + shapeCycle * 0.2) % 1.0;
+              const saturation = 0.7;
+              const lightness = 0.5 + 0.2 * Math.sin(time + i * 0.01);
+              
+              const rgb = hslToRgb(hue, saturation, lightness);
+              
+              particleColors[i * 3] = rgb[0];
+              particleColors[i * 3 + 1] = rgb[1];
+              particleColors[i * 3 + 2] = rgb[2];
+              
+              // Slightly vary sizes based on shape transition
+              particleSizes[i] = particle.size * (1 + 0.2 * Math.sin(time * 2 + i * 0.1));
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions for trails
+              linePositions[i * 6] = particle.lastPosition.x;
+              linePositions[i * 6 + 1] = particle.lastPosition.y;
+              linePositions[i * 6 + 2] = particle.lastPosition.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Rotate the shapes for added effect
+            particleSystem.rotation.y += 0.003;
+            particleSystem.rotation.x += 0.001;
+            
+            // Camera movement to showcase the shapes
+            const cameraTime = time * 0.2;
+            const cameraRadius = 90;
+            const cameraHeight = 20 * Math.sin(cameraTime * 0.5);
+            
+            camera.position.set(
+              Math.sin(cameraTime) * cameraRadius,
+              cameraHeight,
+              Math.cos(cameraTime) * cameraRadius
+            );
+            camera.lookAt(0, 0, 0);
+            
+            // Reset to phase 0 after geometric shapes animation completes
+            if (animationTimer >= transitionTime * 2.5) { // Longer duration for this complex effect
+              console.log("Transitioning to Phase 10: Particle Text");
+              animationTimer = 0;
+              animationPhase = 10;
+              startPhaseTen();
+            }
+          }
+          else if (animationPhase === 10) {
+            // Phase 10: Particle Text Animation
+            const time = Date.now() * 0.001;
+            
+            // Control text message cycling
+            const textCycleDuration = transitionTime * 0.5; // Duration for each text message
+            const textIndex = Math.floor(animationTimer / textCycleDuration) % textMessages.length;
+            const morphProgress = (animationTimer % textCycleDuration) / textCycleDuration;
+            
+            // Eased progress for smoother transitions
+            const easedProgress = easeInOutQuad(morphProgress);
+            
+            // Get current and next text points
+            const currentTextPoints = textPointsArrays[textIndex];
+            const nextTextPoints = textPointsArrays[(textIndex + 1) % textMessages.length];
+            
+            // Update each particle
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Calculate target positions based on text
+              let targetX, targetY, targetZ;
+              let nextTargetX, nextTargetY, nextTargetZ;
+              
+              if (i < currentTextPoints.length) {
+                // Particle has a specific position in the text
+                targetX = currentTextPoints[i].x;
+                targetY = currentTextPoints[i].y;
+                targetZ = 0; // Keep text flat on Z axis to ensure visibility
+                
+                // Get next text position if available
+                if (i < nextTextPoints.length) {
+                  nextTargetX = nextTextPoints[i].x;
+                  nextTargetY = nextTextPoints[i].y;
+                  nextTargetZ = 0;
+                } else {
+                  // If no position in next text, just float randomly
+                  const angle = Math.random() * Math.PI * 2;
+                  const radius = 30 + Math.random() * 10;
+                  nextTargetX = Math.cos(angle) * radius;
+                  nextTargetY = Math.sin(angle) * radius;
+                  nextTargetZ = (Math.random() - 0.5) * 5; // Reduced depth variation
+                }
+              } else {
+                // Particles not used in text float around the outside
+                const angle = (i / particles.length) * Math.PI * 2;
+                const floatRadius = 40 + Math.sin(time + i * 0.1) * 5;
+                targetX = Math.cos(angle + time * 0.1) * floatRadius;
+                targetY = Math.sin(angle + time * 0.1) * floatRadius;
+                targetZ = Math.sin(time * 0.2 + i * 0.1) * 5;
+                
+                // These particles use the same target for current and next
+                nextTargetX = targetX;
+                nextTargetY = targetY;
+                nextTargetZ = targetZ;
+              }
+              
+              // During text transitions, interpolate between current and next positions
+              if (textIndex !== (textIndex + 1) % textMessages.length) {
+                // Only interpolate during transition phase (morphProgress > 0.1)
+                if (morphProgress > 0.1 && morphProgress < 0.9) {
+                  const morphFactor = (morphProgress - 0.1) / 0.8; // Rescale to 0-1 within the 0.1-0.9 range
+                  const easedMorphFactor = easeInOutQuint(morphFactor);
+                  
+                  const finalTargetX = targetX * (1 - easedMorphFactor) + nextTargetX * easedMorphFactor;
+                  const finalTargetY = targetY * (1 - easedMorphFactor) + nextTargetY * easedMorphFactor;
+                  const finalTargetZ = targetZ * (1 - easedMorphFactor) + nextTargetZ * easedMorphFactor;
+                  
+                  // Move towards interpolated position
+                  particle.position.x += (finalTargetX - particle.position.x) * 0.1;
+                  particle.position.y += (finalTargetY - particle.position.y) * 0.1;
+                  particle.position.z += (finalTargetZ - particle.position.z) * 0.1;
+                } else {
+                  // Before and after transition, move toward current target
+                  particle.position.x += (targetX - particle.position.x) * 0.1;
+                  particle.position.y += (targetY - particle.position.y) * 0.1;
+                  particle.position.z += (targetZ - particle.position.z) * 0.1;
+                }
+              } else {
+                // No transition occurring, just move toward target
+                particle.position.x += (targetX - particle.position.x) * 0.1;
+                particle.position.y += (targetY - particle.position.y) * 0.1;
+                particle.position.z += (targetZ - particle.position.z) * 0.1;
+              }
+              
+              // Add a slight jitter for more organic movement
+              particle.position.x += (Math.random() - 0.5) * 0.1;
+              particle.position.y += (Math.random() - 0.5) * 0.1;
+              particle.position.z += (Math.random() - 0.5) * 0.1;
+              
+              // Color based on position in text and time
+              if (i < currentTextPoints.length) {
+                // Main text particles get vibrant colors
+                const hueBase = (textIndex * 0.2) % 1.0; // Different base hue for each text
+                const hueOffset = (i / currentTextPoints.length) * 0.3; // Gradient effect
+                const hue = (hueBase + hueOffset + time * 0.05) % 1.0;
+                
+                const rgb = hslToRgb(hue, 0.7, 0.6);
+                particleColors[i * 3] = rgb[0];
+                particleColors[i * 3 + 1] = rgb[1];
+                particleColors[i * 3 + 2] = rgb[2];
+                
+                // Make text particles slightly larger
+                particleSizes[i] = particle.size * 1.5;
+              } else {
+                // Background particles have more subdued colors
+                const hue = (time * 0.03 + i * 0.001) % 1.0;
+                const rgb = hslToRgb(hue, 0.5, 0.3);
+                particleColors[i * 3] = rgb[0];
+                particleColors[i * 3 + 1] = rgb[1];
+                particleColors[i * 3 + 2] = rgb[2];
+                
+                // Background particles are smaller
+                particleSizes[i] = particle.size * 0.7;
+              }
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions for trails
+              linePositions[i * 6] = particle.lastPosition.x;
+              linePositions[i * 6 + 1] = particle.lastPosition.y;
+              linePositions[i * 6 + 2] = particle.lastPosition.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Reset any rotation to ensure text faces camera directly
+            particleSystem.rotation.set(0, 0, 0);
+            
+            // Fixed camera position to clearly see the text - moved further back to see full height
+            camera.position.set(0, 0, 100);
+            camera.lookAt(0, 0, 0);
+            
+            // Reset to phase 0 after text animation completes
+            if (animationTimer >= transitionTime * 2.5) { // Duration for full cycle through all text messages
               console.log("Resetting to Phase 0");
               animationTimer = 0;
               animationPhase = 0;
@@ -1423,9 +1792,161 @@ function App() {
           }
         }
         
+        // Function to start phase nine animation
+        function startPhaseNine() {
+          // Adjust line material for geometric shapes
+          lineMaterial.color.set(0xffffff);
+          lineMaterial.opacity = 0.15;
+          
+          // Position camera for a good view of the shapes
+          camera.position.set(0, 0, 80);
+          camera.lookAt(0, 0, 0);
+          
+          // Distribute particles randomly as starting point
+          for (let i = 0; i < particles.length; i++) {
+            // Random positions within a sphere
+            const radius = 30 * Math.random();
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi);
+            
+            particles[i].position.set(x, y, z);
+            particles[i].lastPosition.set(x, y, z);
+            
+            // Reset particle speed
+            particles[i].speed = particleBaseSpeed * (0.8 + Math.random() * 0.4);
+          }
+        }
+        
+        // Function to start phase ten animation
+        function startPhaseTen() {
+          // Text messages to display
+          textMessages = [
+            "NISHANTH",
+            "PORTFOLIO",
+            "AI",
+            "DEVELOPER",
+            "WELCOME"
+          ];
+          
+          // Pre-calculate text point positions for all messages
+          textPointsArrays = generateTextPointsArrays(textMessages, particles.length);
+          
+          // Reset any rotation to ensure text is facing the camera
+          particleSystem.rotation.set(0, 0, 0);
+          lines.rotation.set(0, 0, 0);
+          
+          // Set camera directly in front of the XY plane - moved further back to see full height
+          camera.position.set(0, 0, 100);
+          camera.lookAt(0, 0, 0);
+          
+          // Adjust line material for text effect
+          lineMaterial.color.set(0xffffff);
+          lineMaterial.opacity = 0.2;
+          
+          // Reset particle positions to random starting points
+          for (let i = 0; i < particles.length; i++) {
+            // Distribute in a sphere
+            const radius = 40;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi) * 0.2; // Flatten z-axis slightly
+            
+            particles[i].position.set(x, y, z);
+            particles[i].lastPosition.set(x, y, z);
+          }
+        }
+        
+        // Generate points for text
+        function generateTextPointsArrays(messages, maxParticles) {
+          const pointsArrays = [];
+          
+          // Create temporary canvas for text rendering
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = 1024;
+          canvas.height = 512; // Increased height for better text fitting
+          
+          for (let msgIndex = 0; msgIndex < messages.length; msgIndex++) {
+            const message = messages[msgIndex];
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set text properties
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 100px Arial'; // Slightly smaller font
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Draw text
+            ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+            
+            // Sample points from the text
+            const points = [];
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const sampleStep = 4; // Sample every 4 pixels
+            
+            for (let y = 0; y < canvas.height; y += sampleStep) {
+              for (let x = 0; x < canvas.width; x += sampleStep) {
+                const index = (y * canvas.width + x) * 4;
+                
+                // If pixel is not transparent (text pixel)
+                if (data[index + 3] > 128) {
+                  // Convert canvas coordinates to world coordinates with proper scaling
+                  const worldX = (x - canvas.width / 2) * 0.05;
+                  const worldY = -(y - canvas.height / 2) * 0.05;
+                  
+                  points.push({ x: worldX, y: worldY });
+                  
+                  // Limit number of points to maxParticles
+                  if (points.length >= maxParticles) {
+                    break;
+                  }
+                }
+              }
+              if (points.length >= maxParticles) {
+                break;
+              }
+            }
+            
+            // If we have too few points, duplicate some
+            while (points.length < maxParticles / 2) {
+              const randomIndex = Math.floor(Math.random() * points.length);
+              const point = points[randomIndex];
+              // Add with slight offset
+              points.push({
+                x: point.x + (Math.random() - 0.5) * 0.3,
+                y: point.y + (Math.random() - 0.5) * 0.3
+              });
+            }
+            
+            pointsArrays.push(points);
+          }
+          
+          return pointsArrays;
+        }
+
         // Cubic easing function for smoother transitions
         function easeInOutCubic(t) {
           return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Quadratic easing function
+        function easeInOutQuad(t) {
+          return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        }
+
+        // Quintic easing function for snappier animations
+        function easeInOutQuint(t) {
+          return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
         }
 
         // Start the animation loop
