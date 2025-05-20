@@ -528,6 +528,690 @@ function App() {
             // Rotate the scene for added effect
             particleSystem.rotation.y += 0.001;
             particleSystem.rotation.x += 0.0005;
+            
+            // Check if it's time to transition to Phase 4
+            if (animationTimer >= transitionTime) {
+              console.log("Transitioning to Phase 4: Matrix Digital Rain");
+              animationTimer = 0;
+              animationPhase = 4;
+              startPhaseFour();
+            }
+          }
+          else if (animationPhase === 4) {
+            // Phase 4: Matrix-like Digital Rain
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Matrix-like falling motion
+              particle.position.y -= particle.speed * 1.5;
+              
+              // Reset particles that fall below the view
+              if (particle.position.y < -40) {
+                particle.position.y = 40;
+                particle.position.x = (Math.random() * 2 - 1) * 40;
+                particle.position.z = (Math.random() - 0.5) * 20;
+              }
+              
+              // Add some slight horizontal movement
+              particle.position.x += Math.sin(Date.now() * 0.0005 + i * 0.1) * 0.02;
+              
+              // Matrix green color with varying brightness based on position
+              const brightness = 0.4 + 0.6 * Math.abs(particle.position.y / 40);
+              particleColors[i * 3] = 0.1 * brightness; // slight red
+              particleColors[i * 3 + 1] = 0.8 * brightness; // strong green
+              particleColors[i * 3 + 2] = 0.3 * brightness; // some blue
+              
+              // Make some particles pulse
+              if (i % 7 === 0) {
+                const pulse = 0.7 + 0.3 * Math.sin(Date.now() * 0.003 + i);
+                particleColors[i * 3] = 0.1 * pulse;
+                particleColors[i * 3 + 1] = pulse;
+                particleColors[i * 3 + 2] = 0.3 * pulse;
+                particleSizes[i] = particle.size * (1 + 0.5 * pulse);
+              }
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions to create falling trails
+              linePositions[i * 6] = particle.position.x;
+              linePositions[i * 6 + 1] = particle.position.y + 1.5; // trail above
+              linePositions[i * 6 + 2] = particle.position.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Slowly rotate for added dimension
+            particleSystem.rotation.y += 0.0002;
+            
+            // Transition to phase 5 after the digital rain completes its cycle
+            if (animationTimer >= transitionTime * 1.5) {
+              console.log("Transitioning to Phase 5: Galaxy Formation");
+              animationTimer = 0;
+              animationPhase = 5;
+              startPhaseFive();
+            }
+          }
+          else if (animationPhase === 5) {
+            // Phase 5: Galaxy/Starfield Formation
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Calculate time-dependent values
+              const time = Date.now() * 0.0003;
+              const particleIndex = i / particles.length;
+              
+              // Assign particles to different orbital rings
+              const ringIndex = i % 5; // 5 different orbital rings
+              const ringRadius = 10 + ringIndex * 6; // Increasing radii for each ring
+              const ringSpeed = 0.2 - ringIndex * 0.03; // Outer rings move slower
+              
+              // Calculate orbital position
+              const orbitAngle = time * ringSpeed + particleIndex * Math.PI * 2;
+              const targetX = Math.cos(orbitAngle) * ringRadius;
+              const targetY = Math.sin(orbitAngle) * ringRadius;
+              
+              // Add some vertical variance based on ring (creates disk thickness)
+              const verticalOffset = (Math.sin(orbitAngle * 3) * (ringIndex * 0.4));
+              const targetZ = verticalOffset + Math.sin(time * 0.5 + i) * 2;
+              
+              // Smoothly move toward target position
+              particle.position.x += (targetX - particle.position.x) * 0.05;
+              particle.position.y += (targetY - particle.position.y) * 0.05;
+              particle.position.z += (targetZ - particle.position.z) * 0.05;
+              
+              // Stellar colors - create a realistic starfield with different star colors
+              // Blue, white, yellow, orange, red stars
+              let r, g, b;
+              
+              if (i % 10 === 0) { // Blue stars
+                r = 0.5 + 0.2 * Math.sin(time * 2 + i);
+                g = 0.7 + 0.3 * Math.sin(time * 2 + i);
+                b = 1.0;
+              } else if (i % 10 === 1) { // Red stars
+                r = 1.0;
+                g = 0.3 + 0.2 * Math.sin(time * 2 + i);
+                b = 0.2 + 0.1 * Math.sin(time * 2 + i);
+              } else if (i % 10 === 2) { // Yellow stars
+                r = 1.0;
+                g = 0.9 + 0.1 * Math.sin(time * 2 + i);
+                b = 0.4 + 0.2 * Math.sin(time * 2 + i);
+              } else { // White/blue-white stars (majority)
+                const brightness = 0.7 + 0.3 * Math.sin(time * 0.5 + i);
+                r = brightness * 0.9;
+                g = brightness * 0.95;
+                b = brightness;
+              }
+              
+              // Make center of galaxy brighter
+              const distFromCenter = Math.sqrt(
+                particle.position.x * particle.position.x + 
+                particle.position.y * particle.position.y
+              );
+              
+              if (distFromCenter < 5) {
+                const centerBoost = (5 - distFromCenter) / 5;
+                r = Math.min(1.0, r + centerBoost * 0.5);
+                g = Math.min(1.0, g + centerBoost * 0.5);
+                b = Math.min(1.0, b + centerBoost * 0.5);
+                
+                // Make center particles larger
+                particleSizes[i] = particle.size * (1 + centerBoost);
+              } else {
+                particleSizes[i] = particle.size;
+              }
+              
+              // Occasional "twinkle" effect for random stars
+              if (i % 23 === 0) {
+                const twinkle = 0.7 + 0.5 * Math.sin(time * 10 + i);
+                r *= twinkle;
+                g *= twinkle;
+                b *= twinkle;
+              }
+              
+              particleColors[i * 3] = r;
+              particleColors[i * 3 + 1] = g;
+              particleColors[i * 3 + 2] = b;
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions for trails
+              linePositions[i * 6] = particle.lastPosition.x;
+              linePositions[i * 6 + 1] = particle.lastPosition.y;
+              linePositions[i * 6 + 2] = particle.lastPosition.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Slowly rotate the entire galaxy for added effect
+            particleSystem.rotation.z += 0.001;
+            
+            // Transition to phase 6 after galaxy animation completes
+            if (animationTimer >= transitionTime * 1.5) {
+              console.log("Transitioning to Phase 6: Swarm Behavior");
+              animationTimer = 0;
+              animationPhase = 6;
+              startPhaseSix();
+            }
+          }
+          else if (animationPhase === 6) {
+            // Phase 6: Swarm/Flock Behavior
+            // Simulate flocking behavior with separation, alignment, and cohesion (boids algorithm)
+            
+            // Parameters for flocking behavior
+            const cohesionForce = 0.005;
+            const alignmentForce = 0.03;
+            const separationForce = 0.04;
+            const perceptionRadius = 15;
+            const maxSpeed = 0.2;
+            const centerAttraction = 0.001;
+            
+            // Calculate center of mass for the entire flock
+            const flockCenter = new THREE.Vector3();
+            for (let i = 0; i < particles.length; i++) {
+              flockCenter.add(particles[i].position);
+            }
+            flockCenter.divideScalar(particles.length);
+            
+            // Update each particle according to flocking rules
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Initialize forces
+              const separation = new THREE.Vector3();
+              const alignment = new THREE.Vector3();
+              const cohesion = new THREE.Vector3();
+              
+              // Track neighbors for flocking calculations
+              let neighborCount = 0;
+              
+              // Check against all other particles for neighborhood calculations
+              for (let j = 0; j < particles.length; j++) {
+                if (i === j) continue; // Skip self
+                
+                const otherParticle = particles[j];
+                const distance = particle.position.distanceTo(otherParticle.position);
+                
+                // Only consider particles within perception radius
+                if (distance < perceptionRadius) {
+                  // Separation: steer away from neighbors that are too close
+                  if (distance < perceptionRadius * 0.5) {
+                    const diff = new THREE.Vector3().subVectors(particle.position, otherParticle.position);
+                    diff.normalize().divideScalar(Math.max(0.1, distance)); // Stronger effect when closer
+                    separation.add(diff);
+                  }
+                  
+                  // Alignment: steer towards average heading of neighbors
+                  const velocity = new THREE.Vector3().subVectors(
+                    otherParticle.position, 
+                    otherParticle.lastPosition
+                  ).normalize();
+                  
+                  alignment.add(velocity);
+                  
+                  // Cohesion: steer towards center of mass of neighbors
+                  cohesion.add(otherParticle.position);
+                  
+                  neighborCount++;
+                }
+              }
+              
+              // Only apply flocking rules if there are neighbors
+              if (neighborCount > 0) {
+                // Alignment: average velocities of neighbors
+                alignment.divideScalar(neighborCount);
+                alignment.normalize().multiplyScalar(alignmentForce);
+                
+                // Cohesion: move toward center of mass of neighbors
+                cohesion.divideScalar(neighborCount);
+                cohesion.sub(particle.position);
+                cohesion.normalize().multiplyScalar(cohesionForce);
+              }
+              
+              // Apply separation force regardless of neighbor count
+              separation.normalize().multiplyScalar(separationForce);
+              
+              // Add natural attraction to center to keep flock visible
+              const toCenter = new THREE.Vector3().subVectors(
+                new THREE.Vector3(
+                  Math.sin(Date.now() * 0.0005) * 10, 
+                  Math.cos(Date.now() * 0.0003) * 10,
+                  Math.sin(Date.now() * 0.0007) * 5
+                ), 
+                particle.position
+              );
+              toCenter.normalize().multiplyScalar(centerAttraction);
+              
+              // Apply all forces to create velocity
+              const velocity = new THREE.Vector3().subVectors(
+                particle.position, 
+                particle.lastPosition
+              );
+              
+              // Add forces to current velocity
+              velocity.add(separation);
+              velocity.add(alignment);
+              velocity.add(cohesion);
+              velocity.add(toCenter);
+              
+              // Limit maximum speed
+              if (velocity.length() > maxSpeed) {
+                velocity.normalize().multiplyScalar(maxSpeed);
+              }
+              
+              // Apply velocity to position
+              particle.position.add(velocity);
+              
+              // Ensure particles stay within bounds
+              const bound = 40;
+              if (particle.position.x > bound) particle.position.x = bound;
+              if (particle.position.x < -bound) particle.position.x = -bound;
+              if (particle.position.y > bound) particle.position.y = bound;
+              if (particle.position.y < -bound) particle.position.y = -bound;
+              if (particle.position.z > bound) particle.position.z = bound;
+              if (particle.position.z < -bound) particle.position.z = -bound;
+              
+              // Color based on position and velocity
+              const speed = velocity.length() / maxSpeed;
+              const phase = (Date.now() * 0.001) % 20;
+              
+              // Create a wave-like color pattern through the flock
+              const colorPhase = (Math.sin(phase + i * 0.1) + 1) / 2;
+              
+              // Blue to purple to pink gradient
+              particleColors[i * 3] = 0.2 + (speed * 0.8) + (colorPhase * 0.4); // Red
+              particleColors[i * 3 + 1] = 0.2 + (speed * 0.3) * (1 - colorPhase); // Green
+              particleColors[i * 3 + 2] = 0.6 + (speed * 0.4) * colorPhase; // Blue
+              
+              // Vary particle size based on speed
+              particleSizes[i] = particle.size * (0.8 + speed * 0.4);
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions for trails
+              linePositions[i * 6] = particle.lastPosition.x;
+              linePositions[i * 6 + 1] = particle.lastPosition.y;
+              linePositions[i * 6 + 2] = particle.lastPosition.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Subtle rotation of the entire system for more dynamic look
+            particleSystem.rotation.y += 0.0003;
+            
+            // Transition to phase 7 after swarm animation completes
+            if (animationTimer >= transitionTime * 1.5) {
+              console.log("Transitioning to Phase 7: Tornado Vortex");
+              animationTimer = 0;
+              animationPhase = 7;
+              startPhaseSeven();
+            }
+          }
+          else if (animationPhase === 7) {
+            // Phase 7: Tornado/Vortex Effect
+            const time = Date.now() * 0.001;
+            
+            // Tornado parameters
+            const tornadoBaseWidth = 25;
+            const tornadoTopWidth = 8;
+            const tornadoHeight = 60;
+            const tornadoBase = -20; // Base y position
+            const swirl = 5 + Math.sin(time * 0.5) * 2; // Dynamic swirl intensity
+            
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Calculate particle's current height ratio in the tornado (0 at bottom, 1 at top)
+              let heightRatio = (particle.position.y - tornadoBase) / tornadoHeight;
+              
+              // If particle is outside the tornado, move it toward the base
+              if (heightRatio < 0 || heightRatio > 1 || 
+                  Math.sqrt(particle.position.x * particle.position.x + particle.position.z * particle.position.z) > 
+                  tornadoBaseWidth * (1 - heightRatio) + tornadoTopWidth * heightRatio) {
+                
+                // Move fallen particles back to the base of the tornado
+                if (Math.random() < 0.03) {
+                  const angle = Math.random() * Math.PI * 2;
+                  const radius = Math.random() * tornadoBaseWidth;
+                  
+                  particle.position.x = Math.cos(angle) * radius;
+                  particle.position.y = tornadoBase + Math.random() * 5;
+                  particle.position.z = Math.sin(angle) * radius;
+                  
+                  heightRatio = 0;
+                }
+              }
+              
+              // For particles in the tornado
+              if (heightRatio >= 0 && heightRatio <= 1) {
+                // Calculate the tornado width at this height
+                const radiusAtHeight = tornadoBaseWidth * (1 - heightRatio) + tornadoTopWidth * heightRatio;
+                
+                // Current angle of particle around the central axis
+                const currentAngle = Math.atan2(particle.position.z, particle.position.x);
+                
+                // Spiral movement: increase angle based on height
+                const angularVelocity = (1.5 - heightRatio) * particle.speed * swirl;
+                const newAngle = currentAngle + angularVelocity * 0.1;
+                
+                // Calculate new position based on spiral
+                const currentRadius = Math.sqrt(particle.position.x * particle.position.x + particle.position.z * particle.position.z);
+                
+                // Gradually adjust radius to match the tornado shape
+                const targetRadius = radiusAtHeight * (0.8 + Math.random() * 0.4);
+                const newRadius = currentRadius + (targetRadius - currentRadius) * 0.03;
+                
+                // Update position
+                particle.position.x = Math.cos(newAngle) * newRadius;
+                particle.position.z = Math.sin(newAngle) * newRadius;
+                
+                // Move upward with increasing speed based on height
+                particle.position.y += particle.speed * (0.5 + heightRatio * 2);
+                
+                // Add some turbulence
+                const turbulence = 0.1 + heightRatio * 0.2;
+                particle.position.x += (Math.random() * 2 - 1) * turbulence;
+                particle.position.z += (Math.random() * 2 - 1) * turbulence;
+                
+                // Reset particles that reach the top
+                if (particle.position.y > tornadoBase + tornadoHeight) {
+                  // Some particles shoot out from the top
+                  if (Math.random() < 0.3) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = tornadoTopWidth + Math.random() * 10;
+                    particle.position.x = Math.cos(angle) * radius;
+                    particle.position.z = Math.sin(angle) * radius;
+                    particle.position.y += 2 + Math.random() * 3;
+                  } else {
+                    // Others return to the base
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = Math.random() * tornadoBaseWidth;
+                    particle.position.x = Math.cos(angle) * radius;
+                    particle.position.y = tornadoBase + Math.random() * 5;
+                    particle.position.z = Math.sin(angle) * radius;
+                  }
+                }
+                
+                // Dynamic colors based on height and time
+                const hue = (time * 0.1 + heightRatio) % 1;
+                const saturation = 0.7 + heightRatio * 0.3;
+                const lightness = 0.3 + heightRatio * 0.3;
+                
+                const rgb = hslToRgb(hue, saturation, lightness);
+                
+                particleColors[i * 3] = rgb[0];
+                particleColors[i * 3 + 1] = rgb[1];
+                particleColors[i * 3 + 2] = rgb[2];
+                
+                // Make particles near the center of the tornado brighter
+                const distFromCenter = Math.sqrt(
+                  particle.position.x * particle.position.x + 
+                  particle.position.z * particle.position.z
+                );
+                
+                if (distFromCenter < radiusAtHeight * 0.3) {
+                  const centerBoost = 1 - (distFromCenter / (radiusAtHeight * 0.3));
+                  particleColors[i * 3] = Math.min(1.0, particleColors[i * 3] + centerBoost * 0.5);
+                  particleColors[i * 3 + 1] = Math.min(1.0, particleColors[i * 3 + 1] + centerBoost * 0.5);
+                  particleColors[i * 3 + 2] = Math.min(1.0, particleColors[i * 3 + 2] + centerBoost * 0.5);
+                }
+                
+                // Vary particle size based on height - larger at the top
+                particleSizes[i] = particle.size * (1 + heightRatio * 0.5);
+              }
+              
+              // Particles outside the tornado slowly float down
+              if (heightRatio > 1 || (heightRatio < 0 && particle.position.y > tornadoBase - 20)) {
+                particle.position.y -= 0.05;
+                
+                // Dim the colors for particles outside the tornado
+                particleColors[i * 3] *= 0.95;
+                particleColors[i * 3 + 1] *= 0.95;
+                particleColors[i * 3 + 2] *= 0.95;
+              }
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions for trails
+              linePositions[i * 6] = particle.lastPosition.x;
+              linePositions[i * 6 + 1] = particle.lastPosition.y;
+              linePositions[i * 6 + 2] = particle.lastPosition.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Rotate the entire system slowly for an added effect
+            particleSystem.rotation.y += 0.001;
+            
+            // Transition to Phase 8 after tornado animation completes
+            if (animationTimer >= transitionTime * 1.8) { // Slightly longer duration for this effect
+              console.log("Transitioning to Phase 8: DNA Double Helix");
+              animationTimer = 0;
+              animationPhase = 8;
+              startPhaseEight();
+            }
+          }
+          else if (animationPhase === 8) {
+            // Phase 8: DNA Double Helix Animation
+            const time = Date.now() * 0.001;
+            
+            // DNA parameters
+            const dnaLength = 100;      // Length of the DNA strand
+            const dnaRadius = 15;       // Radius of the helix
+            const dnaStep = 4;          // Vertical distance between steps
+            const twistRate = 0.2;      // How fast the DNA twists
+            const baseWidth = 3;        // Width of base pairs
+            
+            // Calculate the current animation progress
+            const animProgress = Math.min(1.0, animationTimer / (transitionTime * 0.8));
+            
+            // Smooth formation progress using easing function
+            const formationProgress = easeInOutCubic(animProgress);
+            
+            // DNA moves up slowly
+            const dnaYOffset = -dnaLength / 2 + (time * 3) % dnaLength;
+            
+            for (let i = 0; i < particles.length; i++) {
+              const particle = particles[i];
+              
+              // Store previous position for trails
+              particle.lastPosition.copy(particle.position);
+              
+              // Assign particles to different parts of the DNA structure
+              const particleGroup = i % 8; // Group particles into roles
+              
+              // Calculate target position on DNA
+              let targetX, targetY, targetZ;
+              let colorR, colorG, colorB;
+              
+              // Particle's relative position in the DNA strand
+              const dnaPosition = (i % (particles.length / 4)) / (particles.length / 4);
+              const yPos = dnaPosition * dnaLength - dnaLength / 2 + dnaYOffset;
+              
+              if (particleGroup < 4) {
+                // Particles for the two main strands (double helix)
+                const strandIndex = particleGroup % 2; // 0 or 1 for first or second strand
+                const angle = yPos * 0.2 + strandIndex * Math.PI + time * twistRate;
+                
+                targetX = Math.cos(angle) * dnaRadius;
+                targetY = yPos;
+                targetZ = Math.sin(angle) * dnaRadius;
+                
+                // Different colors for each strand
+                if (strandIndex === 0) {
+                  // First strand - blue to cyan
+                  colorR = 0.1 + Math.sin(yPos * 0.1 + time) * 0.1;
+                  colorG = 0.5 + Math.sin(yPos * 0.1 + time) * 0.2;
+                  colorB = 0.9;
+                } else {
+                  // Second strand - purple to pink
+                  colorR = 0.8;
+                  colorG = 0.2 + Math.sin(yPos * 0.1 + time + Math.PI) * 0.2;
+                  colorB = 0.8 + Math.sin(yPos * 0.1 + time + Math.PI) * 0.2;
+                }
+              } else if (particleGroup < 8) {
+                // Particles for the base pairs connecting the strands
+                const basePairIndex = (particleGroup - 4) % 4;
+                const baseProgress = basePairIndex / 3; // 0-1 position across the base pair
+                
+                // Calculate the position of the connecting base pair
+                const angle = yPos * 0.2 + time * twistRate;
+                const baseAngle = angle + Math.PI * baseProgress;
+                
+                // Only add base pairs at regular intervals
+                if (Math.floor(yPos / dnaStep) === yPos / dnaStep) {
+                  targetX = Math.cos(angle) * dnaRadius * (1 - baseProgress) + 
+                            Math.cos(angle + Math.PI) * dnaRadius * baseProgress;
+                  targetY = yPos;
+                  targetZ = Math.sin(angle) * dnaRadius * (1 - baseProgress) + 
+                            Math.sin(angle + Math.PI) * dnaRadius * baseProgress;
+                } else {
+                  // Particles not in a base pair position follow a smaller helix pattern
+                  const miniStrandIndex = basePairIndex % 2;
+                  const miniAngle = yPos * 0.3 + miniStrandIndex * Math.PI + time * twistRate * 1.5;
+                  
+                  targetX = Math.cos(miniAngle) * (dnaRadius * 0.5);
+                  targetY = yPos + Math.sin(time + i) * 0.5;
+                  targetZ = Math.sin(miniAngle) * (dnaRadius * 0.5);
+                }
+                
+                // Base pair colors (green-yellow)
+                colorR = 0.4 + Math.sin(yPos * 0.2) * 0.2;
+                colorG = 0.8;
+                colorB = 0.3 + Math.cos(yPos * 0.2) * 0.2;
+              }
+              
+              // Apply smooth formation effect
+              if (formationProgress < 1.0) {
+                // Mix between current position and target DNA position based on formation progress
+                particle.position.x += (targetX - particle.position.x) * 0.03 * (1 + formationProgress * 2);
+                particle.position.y += (targetY - particle.position.y) * 0.03 * (1 + formationProgress * 2);
+                particle.position.z += (targetZ - particle.position.z) * 0.03 * (1 + formationProgress * 2);
+                
+                // Blend colors smoothly during formation
+                const currentR = particleColors[i * 3];
+                const currentG = particleColors[i * 3 + 1];
+                const currentB = particleColors[i * 3 + 2];
+                
+                particleColors[i * 3] = currentR + (colorR - currentR) * 0.05 * (1 + formationProgress * 2);
+                particleColors[i * 3 + 1] = currentG + (colorG - currentG) * 0.05 * (1 + formationProgress * 2);
+                particleColors[i * 3 + 2] = currentB + (colorB - currentB) * 0.05 * (1 + formationProgress * 2);
+              } else {
+                // DNA fully formed - use direct targeting
+                particle.position.x += (targetX - particle.position.x) * 0.1;
+                particle.position.y += (targetY - particle.position.y) * 0.1;
+                particle.position.z += (targetZ - particle.position.z) * 0.1;
+                
+                particleColors[i * 3] = colorR;
+                particleColors[i * 3 + 1] = colorG;
+                particleColors[i * 3 + 2] = colorB;
+                
+                // Add some gentle randomness for more organic look
+                particle.position.x += (Math.random() - 0.5) * 0.1;
+                particle.position.y += (Math.random() - 0.5) * 0.1;
+                particle.position.z += (Math.random() - 0.5) * 0.1;
+                
+                // Pulsating effect for base pairs
+                if (particleGroup >= 4 && particleGroup < 8) {
+                  const pulse = Math.sin(time * 2 + i * 0.1) * 0.2 + 0.8;
+                  particleColors[i * 3] *= pulse;
+                  particleColors[i * 3 + 1] *= pulse;
+                  particleColors[i * 3 + 2] *= pulse;
+                }
+              }
+              
+              // Set particle size based on its role
+              if (particleGroup < 4) {
+                // Main helix strands - slightly larger
+                particleSizes[i] = particle.size * 1.2;
+              } else {
+                // Base pairs - slightly smaller
+                particleSizes[i] = particle.size * 0.9;
+              }
+              
+              // Update position in buffer
+              particlePositions[i * 3] = particle.position.x;
+              particlePositions[i * 3 + 1] = particle.position.y;
+              particlePositions[i * 3 + 2] = particle.position.z;
+              
+              // Update line positions for trails
+              linePositions[i * 6] = particle.lastPosition.x;
+              linePositions[i * 6 + 1] = particle.lastPosition.y;
+              linePositions[i * 6 + 2] = particle.lastPosition.z;
+              linePositions[i * 6 + 3] = particle.position.x;
+              linePositions[i * 6 + 4] = particle.position.y;
+              linePositions[i * 6 + 5] = particle.position.z;
+            }
+            
+            // Rotate the DNA structure for better viewing
+            particleSystem.rotation.y += 0.002;
+            
+            // Smoothly animate camera during formation
+            if (formationProgress < 1.0) {
+              const cameraY = 10 + formationProgress * 10;
+              camera.position.set(Math.sin(time * 0.2) * 10, cameraY, 80 - formationProgress * 10);
+              camera.lookAt(0, 0, 0);
+            } else {
+              // Spiral camera around DNA once formed
+              const cameraTime = time * 0.3;
+              const cameraRadius = 60;
+              camera.position.set(
+                Math.sin(cameraTime) * cameraRadius,
+                0,
+                Math.cos(cameraTime) * cameraRadius
+              );
+              camera.lookAt(0, 0, 0);
+            }
+            
+            // Reset to phase 0 after DNA animation completes
+            if (animationTimer >= transitionTime * 2) {
+              console.log("Resetting to Phase 0");
+              animationTimer = 0;
+              animationPhase = 0;
+              particleSystem.rotation.set(0, 0, 0);
+              lines.rotation.set(0, 0, 0);
+              
+              // Reset camera position
+              camera.position.set(0, 0, 80);
+              camera.lookAt(0, 0, 0);
+              
+              // Reset particles to random positions for flow field
+              for (let i = 0; i < particles.length; i++) {
+                const x = (Math.random() - 0.5) * flowfieldSize;
+                const y = (Math.random() - 0.5) * flowfieldSize;
+                const z = (Math.random() - 0.5) * flowfieldSize;
+                
+                particles[i].position.set(x, y, z);
+                particles[i].lastPosition.set(x, y, z);
+              }
+            }
           }
           
           // Update the geometries
@@ -583,6 +1267,165 @@ function App() {
             particles[i].position.y += (Math.random() - 0.5) * 5;
             particles[i].position.z += (Math.random() - 0.5) * 5;
           }
+        }
+
+        // Function to start phase four animation
+        function startPhaseFour() {
+          // Reset particle system rotation
+          particleSystem.rotation.set(0, 0, 0);
+          lines.rotation.set(0, 0, 0);
+          
+          // Distribute particles in a grid-like pattern at the top
+          for (let i = 0; i < particles.length; i++) {
+            // Distribute across the width
+            const x = (Math.random() * 2 - 1) * 40;
+            // Distribute vertically with some randomness
+            const y = 40 + (Math.random() * 40);
+            // Some depth variation
+            const z = (Math.random() - 0.5) * 20;
+            
+            particles[i].position.set(x, y, z);
+            particles[i].lastPosition.set(x, y, z);
+            
+            // Vary speeds slightly for more natural look
+            particles[i].speed = particleBaseSpeed * (0.8 + Math.random() * 0.4);
+          }
+          
+          // Update line material for the matrix effect
+          lineMaterial.color.set(0x00ff00);
+          lineMaterial.opacity = 0.7;
+        }
+
+        // Function to start phase five animation
+        function startPhaseFive() {
+          // Reset particle system rotation
+          particleSystem.rotation.set(0, 0, 0);
+          lines.rotation.set(0, 0, 0);
+          
+          // Distribute particles in a spherical formation
+          for (let i = 0; i < particles.length; i++) {
+            // Random distribution in 3D space
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const radius = 20 + Math.random() * 20;
+            
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi) * 0.5; // Flatten z-axis to create disk-like formation
+            
+            particles[i].position.set(x, y, z);
+            particles[i].lastPosition.set(x, y, z);
+            particles[i].speed = particleBaseSpeed * (0.8 + Math.random() * 0.4);
+          }
+          
+          // Update line material for the galaxy effect
+          lineMaterial.color.set(0xaaaaff);
+          lineMaterial.opacity = 0.3;
+        }
+
+        // Function to start phase six animation
+        function startPhaseSix() {
+          // Reset particle system rotation
+          particleSystem.rotation.set(0, 0, 0);
+          lines.rotation.set(0, 0, 0);
+          
+          // Distribute particles in a spherical cluster to start the swarm
+          const clusterRadius = 15;
+          for (let i = 0; i < particles.length; i++) {
+            // Random direction from center
+            const direction = new THREE.Vector3(
+              Math.random() * 2 - 1,
+              Math.random() * 2 - 1,
+              Math.random() * 2 - 1
+            ).normalize();
+            
+            // Random distance from center
+            const distance = Math.random() * clusterRadius;
+            
+            // Position
+            const x = direction.x * distance;
+            const y = direction.y * distance;
+            const z = direction.z * distance;
+            
+            particles[i].position.set(x, y, z);
+            
+            // Offset last position slightly to give initial velocity in random direction
+            const randomOffset = new THREE.Vector3(
+              (Math.random() * 2 - 1) * 0.1,
+              (Math.random() * 2 - 1) * 0.1,
+              (Math.random() * 2 - 1) * 0.1
+            );
+            
+            particles[i].lastPosition.copy(particles[i].position).add(randomOffset);
+            particles[i].speed = particleBaseSpeed * (0.8 + Math.random() * 0.4);
+          }
+          
+          // Update line material for the swarm effect
+          lineMaterial.color.set(0x4488ff);
+          lineMaterial.opacity = 0.4;
+        }
+
+        // Function to start phase seven animation
+        function startPhaseSeven() {
+          // Reset particle system rotation
+          particleSystem.rotation.set(0, 0, 0);
+          lines.rotation.set(0, 0, 0);
+          
+          // Position camera to better view the tornado
+          camera.position.set(0, 20, 80);
+          camera.lookAt(0, 10, 0);
+          
+          // Set up initial tornado formation at the base
+          const tornadoBase = -20;
+          const tornadoBaseWidth = 25;
+          
+          for (let i = 0; i < particles.length; i++) {
+            // Distribute particles in a circle at the base of the tornado
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * tornadoBaseWidth;
+            
+            const x = Math.cos(angle) * radius;
+            const y = tornadoBase + Math.random() * 5; // Slightly scattered vertically at base
+            const z = Math.sin(angle) * radius;
+            
+            particles[i].position.set(x, y, z);
+            particles[i].lastPosition.set(x, y, z);
+            
+            // Vary speeds for more natural movement
+            particles[i].speed = particleBaseSpeed * (0.5 + Math.random() * 1.5);
+          }
+          
+          // Update line material for tornado effect
+          lineMaterial.color.set(0xffffff);
+          lineMaterial.opacity = 0.2;
+        }
+
+        // Function to start phase eight animation
+        function startPhaseEight() {
+          // Create a smooth transition from tornado to DNA
+          // Don't reset particle positions, let them morph
+          
+          // Adjust line material for DNA effect
+          lineMaterial.color.set(0x88aaff);
+          lineMaterial.opacity = 0.4;
+          
+          // Position camera for DNA view
+          camera.position.set(0, 10, 80);
+          camera.lookAt(0, 0, 0);
+          
+          // Give particles a slight initial velocity toward their eventual positions
+          for (let i = 0; i < particles.length; i++) {
+            // Very subtle movement to prevent jarring transition
+            particles[i].lastPosition.copy(particles[i].position);
+            
+            // Slightly vary speeds
+            particles[i].speed = particleBaseSpeed * (0.8 + Math.random() * 0.6);
+          }
+        }
+        
+        // Cubic easing function for smoother transitions
+        function easeInOutCubic(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
 
         // Start the animation loop
