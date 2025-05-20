@@ -744,7 +744,7 @@ function App() {
     },
     {
       name: 'LinkedIn',
-      url: 'https://www.linkedin.com/in/nishanth-chowdary-arekatla-4a8b1b1b3/',
+      url: 'https://www.linkedin.com/in/arekatla-nishanth-chowdary/',
       icon: 'fab fa-linkedin'
     },
     {
