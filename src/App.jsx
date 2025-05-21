@@ -2116,9 +2116,11 @@ function App() {
     }
   ];
 
+  const baseUrl = import.meta.env.PROD ? '' : '/react-portfolio';
+  
   // Handle PDF viewer modal
   const openPdfViewer = (url) => {
-    setPdfViewerModal({ isOpen: true, url });
+    setPdfViewerModal({ isOpen: true, url: `${baseUrl}${url}` });
     document.body.classList.add('overflow-hidden');
   };
 
@@ -2200,7 +2202,7 @@ function App() {
                   machine learning, and data analysis, with a special interest in safety applications.
                 </p>
                 <div className="flex gap-4">
-                  <a href="/Resume.pdf" className="btn btn-primary" download>
+                  <a href={`${baseUrl}/Resume.pdf`} className="btn btn-primary" download>
                     <i className="fas fa-download mr-2"></i> Download Resume
                   </a>
                   <button onClick={() => openPdfViewer('/Resume.pdf')} className="btn btn-secondary">
