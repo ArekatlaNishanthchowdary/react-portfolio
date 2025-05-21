@@ -9,6 +9,7 @@ import './index.css';
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
+  const [pdfViewerModal, setPdfViewerModal] = useState({ isOpen: false, url: '' });
   const bgCanvasRef = useRef(null);
   const contactFormRef = useRef(null);
   const [formStatus, setFormStatus] = useState({ message: '', type: '' });
@@ -2115,6 +2116,17 @@ function App() {
     }
   ];
 
+  // Handle PDF viewer modal
+  const openPdfViewer = (url) => {
+    setPdfViewerModal({ isOpen: true, url });
+    document.body.classList.add('overflow-hidden');
+  };
+
+  const closePdfViewer = () => {
+    setPdfViewerModal({ isOpen: false, url: '' });
+    document.body.classList.remove('overflow-hidden');
+  };
+
   return (
     <>
       {/* WebGL Background Canvas */}
@@ -2187,19 +2199,24 @@ function App() {
                   developing AI-driven solutions for real-world problems. My focus areas include computer vision, 
                   machine learning, and data analysis, with a special interest in safety applications.
                 </p>
-                <a href="/Resume.pdf" className="btn btn-primary" download>
-                  <i className="fas fa-download mr-2"></i> Download Resume
-                </a>
+                <div className="flex gap-4">
+                  <a href="/react-portfolio/Resume.pdf" className="btn btn-primary" download>
+                    <i className="fas fa-download mr-2"></i> Download Resume
+                  </a>
+                  <button onClick={() => openPdfViewer('/react-portfolio/Resume.pdf')} className="btn btn-secondary">
+                    <i className="fas fa-eye mr-2"></i> View Resume
+                  </button>
+                </div>
               </div>
               <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
                 <h3 className="text-2xl font-semibold mb-4">Technical Skills</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center">
                     <div className="mr-3 text-accent-blue text-2xl">
-                      <i className="fab fa-python"></i>
+                      <i className="fas fa-brain"></i>
                     </div>
                     <div>
-                      <h4 className="font-medium">Python</h4>
+                      <h4 className="font-medium">Deep Learning</h4>
                       <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
                         <div className="h-full bg-accent-blue rounded-full" style={{ width: '90%' }}></div>
                       </div>
@@ -2207,12 +2224,23 @@ function App() {
                   </div>
                   <div className="flex items-center">
                     <div className="mr-3 text-accent-blue text-2xl">
-                      <i className="fas fa-brain"></i>
+                      <i className="fas fa-robot"></i>
                     </div>
                     <div>
-                      <h4 className="font-medium">TensorFlow</h4>
+                      <h4 className="font-medium">Machine Learning</h4>
                       <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
                         <div className="h-full bg-accent-purple rounded-full" style={{ width: '85%' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="mr-3 text-accent-blue text-2xl">
+                      <i className="fab fa-python"></i>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Python</h4>
+                      <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
+                        <div className="h-full bg-accent-pink rounded-full" style={{ width: '95%' }}></div>
                       </div>
                     </div>
                   </div>
@@ -2223,21 +2251,63 @@ function App() {
                     <div>
                       <h4 className="font-medium">OpenCV</h4>
                       <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                        <div className="h-full bg-accent-pink rounded-full" style={{ width: '80%' }}></div>
+                        <div className="h-full bg-accent-blue rounded-full" style={{ width: '80%' }}></div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center">
-                    <div className="mr-3 text-accent-blue text-2xl">
-                      <i className="fas fa-chart-line"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Scikit-learn</h4>
-                      <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                        <div className="h-full bg-accent-blue rounded-full" style={{ width: '85%' }}></div>
-                      </div>
-                    </div>
-                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Certificates Section */}
+        <section id="certificates" className="py-20 bg-secondary/30">
+          <div className="container">
+            <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">Certificates</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="card backdrop-blur-md bg-black/20">
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Joy of Computing with Python</h3>
+                  <p className="text-gray-300 mb-4">NPTEL</p>
+                  <p className="text-sm text-gray-400 mb-4">Issued Dec 2024</p>
+                  <p className="text-sm text-gray-400 mb-4">Credential ID: NPTEL24CS113S755802494</p>
+                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Joy of computing using python nptel.pdf')} className="text-accent-blue hover:underline">
+                    <i className="fas fa-eye mr-1"></i> View Certificate
+                  </button>
+                </div>
+              </div>
+              <div className="card backdrop-blur-md bg-black/20">
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Introduction to Artificial Intelligence</h3>
+                  <p className="text-gray-300 mb-4">Infosys Springboard</p>
+                  <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
+                  <p className="text-sm text-gray-400 mb-4">Skills: Artificial Intelligence (AI)</p>
+                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Introduction to artificial Intelligence infosys.pdf')} className="text-accent-blue hover:underline">
+                    <i className="fas fa-eye mr-1"></i> View Certificate
+                  </button>
+                </div>
+              </div>
+              <div className="card backdrop-blur-md bg-black/20">
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Introduction to Deep Learning</h3>
+                  <p className="text-gray-300 mb-4">Infosys Springboard</p>
+                  <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
+                  <p className="text-sm text-gray-400 mb-4">Skills: Deep Learning</p>
+                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Introduction to Deep Learning infosys.pdf')} className="text-accent-blue hover:underline">
+                    <i className="fas fa-eye mr-1"></i> View Certificate
+                  </button>
+                </div>
+              </div>
+              <div className="card backdrop-blur-md bg-black/20">
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Introduction to Python</h3>
+                  <p className="text-gray-300 mb-4">Infosys Springboard</p>
+                  <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
+                  <p className="text-sm text-gray-400 mb-4">Skills: Python (Programming Language)</p>
+                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Introduction to python infosys.pdf')} className="text-accent-blue hover:underline">
+                    <i className="fas fa-eye mr-1"></i> View Certificate
+                  </button>
                 </div>
               </div>
             </div>
@@ -2403,6 +2473,30 @@ function App() {
             </div>
           </div>
         </footer>
+      </div>
+
+      {/* PDF Viewer Modal */}
+      <div 
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 ${pdfViewerModal.isOpen ? 'flex' : 'hidden'}`}
+        onClick={closePdfViewer}>
+        <div 
+          className="max-w-4xl w-full bg-secondary rounded-xl p-6 shadow-2xl max-h-[90vh] overflow-hidden"
+          onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-2xl font-bold">Document Viewer</h3>
+            <button className="close-modal text-xl text-gray-400 hover:text-white" onClick={closePdfViewer}>
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          <div className="w-full h-[70vh] flex items-center justify-center">
+            <iframe 
+              src={`${pdfViewerModal.url}#toolbar=0&view=FitH`}
+              className="w-full h-full rounded-lg object-contain"
+              style={{ maxWidth: '100%', maxHeight: '100%' }}
+              title="PDF Viewer">
+            </iframe>
+          </div>
+        </div>
       </div>
     </>
   );
