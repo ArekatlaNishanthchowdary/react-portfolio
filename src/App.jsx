@@ -2057,7 +2057,7 @@ function App() {
         'Scalable architecture ideal for smart city applications'
       ],
       overview: 'This intelligent traffic management system prioritizes emergency vehicles in urban settings to reduce response times. It integrates IoT cameras for real-time video capture and uses the YOLOv8x model for accurate vehicle detection and classification.',
-      github: '#',
+      github: 'https://github.com/ArekatlaNishanthchowdary/Smart-Traffic-Management',
       demo: '#',
       image: 'https://placehold.co/600x400/1e293b/38bdf8?text=Emergency+Vehicle+Detection'
     },
@@ -2076,7 +2076,7 @@ function App() {
         'Ablation study confirmed 3.7% performance gain with hybrid features'
       ],
       overview: 'This project develops an explainable hybrid ensemble model for predicting road accident severity, integrating LightGBM, Support Vector Machine (SVM), and Random Forest. The model is enhanced by a variational autoencoder (VAE)-based feature augmentation technique inspired by hybrid quantum-classical methods.',
-      github: '#',
+      github: 'https://github.com/ArekatlaNishanthchowdary/Explainable-Hybrid-Model-for-Accident-Severity',
       demo: '#',
       image: 'https://placehold.co/600x400/1e293b/a855f7?text=Accident+Severity+Prediction'
     },
