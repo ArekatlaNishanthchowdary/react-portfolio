@@ -2200,10 +2200,10 @@ function App() {
                   machine learning, and data analysis, with a special interest in safety applications.
                 </p>
                 <div className="flex gap-4">
-                  <a href="/react-portfolio/Resume.pdf" className="btn btn-primary" download>
+                  <a href="/Resume.pdf" className="btn btn-primary" download>
                     <i className="fas fa-download mr-2"></i> Download Resume
                   </a>
-                  <button onClick={() => openPdfViewer('/react-portfolio/Resume.pdf')} className="btn btn-secondary">
+                  <button onClick={() => openPdfViewer('/Resume.pdf')} className="btn btn-secondary">
                     <i className="fas fa-eye mr-2"></i> View Resume
                   </button>
                 </div>
@@ -2272,7 +2272,7 @@ function App() {
                   <p className="text-gray-300 mb-4">NPTEL</p>
                   <p className="text-sm text-gray-400 mb-4">Issued Dec 2024</p>
                   <p className="text-sm text-gray-400 mb-4">Credential ID: NPTEL24CS113S755802494</p>
-                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Joy of computing using python nptel.pdf')} className="text-accent-blue hover:underline">
+                  <button onClick={() => openPdfViewer('/certificates/Joy of computing using python nptel.pdf')} className="text-accent-blue hover:underline">
                     <i className="fas fa-eye mr-1"></i> View Certificate
                   </button>
                 </div>
@@ -2283,7 +2283,7 @@ function App() {
                   <p className="text-gray-300 mb-4">Infosys Springboard</p>
                   <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
                   <p className="text-sm text-gray-400 mb-4">Skills: Artificial Intelligence (AI)</p>
-                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Introduction to artificial Intelligence infosys.pdf')} className="text-accent-blue hover:underline">
+                  <button onClick={() => openPdfViewer('/certificates/Introduction to artificial Intelligence infosys.pdf')} className="text-accent-blue hover:underline">
                     <i className="fas fa-eye mr-1"></i> View Certificate
                   </button>
                 </div>
@@ -2294,7 +2294,7 @@ function App() {
                   <p className="text-gray-300 mb-4">Infosys Springboard</p>
                   <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
                   <p className="text-sm text-gray-400 mb-4">Skills: Deep Learning</p>
-                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Introduction to Deep Learning infosys.pdf')} className="text-accent-blue hover:underline">
+                  <button onClick={() => openPdfViewer('/certificates/Introduction to Deep Learning infosys.pdf')} className="text-accent-blue hover:underline">
                     <i className="fas fa-eye mr-1"></i> View Certificate
                   </button>
                 </div>
@@ -2305,7 +2305,7 @@ function App() {
                   <p className="text-gray-300 mb-4">Infosys Springboard</p>
                   <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
                   <p className="text-sm text-gray-400 mb-4">Skills: Python (Programming Language)</p>
-                  <button onClick={() => openPdfViewer('/react-portfolio/certificates/Introduction to python infosys.pdf')} className="text-accent-blue hover:underline">
+                  <button onClick={() => openPdfViewer('/certificates/Introduction to python infosys.pdf')} className="text-accent-blue hover:underline">
                     <i className="fas fa-eye mr-1"></i> View Certificate
                   </button>
                 </div>
