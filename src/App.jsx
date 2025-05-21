@@ -2058,7 +2058,6 @@ function App() {
       ],
       overview: 'This intelligent traffic management system prioritizes emergency vehicles in urban settings to reduce response times. It integrates IoT cameras for real-time video capture and uses the YOLOv8x model for accurate vehicle detection and classification.',
       github: 'https://github.com/ArekatlaNishanthchowdary/Smart-Traffic-Management',
-      demo: '#',
       image: 'https://placehold.co/600x400/1e293b/38bdf8?text=Emergency+Vehicle+Detection'
     },
     {
@@ -2077,7 +2076,6 @@ function App() {
       ],
       overview: 'This project develops an explainable hybrid ensemble model for predicting road accident severity, integrating LightGBM, Support Vector Machine (SVM), and Random Forest. The model is enhanced by a variational autoencoder (VAE)-based feature augmentation technique inspired by hybrid quantum-classical methods.',
       github: 'https://github.com/ArekatlaNishanthchowdary/Explainable-Hybrid-Model-for-Accident-Severity',
-      demo: '#',
       image: 'https://placehold.co/600x400/1e293b/a855f7?text=Accident+Severity+Prediction'
     },
     {
@@ -2095,7 +2093,6 @@ function App() {
       ],
       overview: 'A NLP-based system that analyzes sentiment from social media posts and comments. It uses BERT for contextual understanding and classifies text as positive, negative, or neutral.',
       github: '#',
-      demo: '#',
       image: 'https://placehold.co/600x400/1e293b/ec4899?text=Sentiment+Analysis'
     }
   ];
@@ -2311,9 +2308,6 @@ function App() {
               <div className="flex gap-4">
                 <a href={project.github} className="btn btn-primary">
                   <i className="fab fa-github mr-2"></i> GitHub
-                </a>
-                <a href={project.demo} className="btn btn-secondary">
-                  <i className="fas fa-desktop mr-2"></i> Demo
                 </a>
               </div>
             </div>
