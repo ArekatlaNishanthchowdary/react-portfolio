@@ -2482,19 +2482,19 @@ function App() {
         className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 ${pdfViewerModal.isOpen ? 'flex' : 'hidden'}`}
         onClick={closePdfViewer}>
         <div 
-          className="max-w-4xl w-full bg-secondary rounded-xl p-6 shadow-2xl max-h-[90vh] overflow-hidden"
+          className="w-full h-full md:max-w-4xl md:h-auto bg-secondary rounded-xl p-4 md:p-6 shadow-2xl flex flex-col"
           onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-2xl font-bold">Document Viewer</h3>
+            <h3 className="text-xl md:text-2xl font-bold">Document Viewer</h3>
             <button className="close-modal text-xl text-gray-400 hover:text-white" onClick={closePdfViewer}>
               <i className="fas fa-times"></i>
             </button>
           </div>
-          <div className="w-full h-[70vh] flex items-center justify-center">
+          <div className="flex-1 w-full h-full min-h-[50vh] md:min-h-[70vh] relative">
             <iframe 
               src={`${pdfViewerModal.url}#toolbar=0&view=FitH`}
-              className="w-full h-full rounded-lg object-contain"
-              style={{ maxWidth: '100%', maxHeight: '100%' }}
+              className="absolute inset-0 w-full h-full rounded-lg"
+              style={{ border: 'none' }}
               title="PDF Viewer">
             </iframe>
           </div>
