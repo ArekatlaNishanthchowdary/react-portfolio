@@ -17,7 +17,7 @@ function App() {
   const [formStatus, setFormStatus] = useState({ message: '', type: '' });
   const mainContainerRef = useRef(null);
   const appContentRef = useRef(null);
-  const [activeSection, setActiveSection] = useState('projects'); // Add this new state
+  const [activeSection, setActiveSection] = useState('projects');
 
   // Initialize EmailJS
   useEffect(() => {
@@ -26,13 +26,19 @@ function App() {
 
   // Handle preloader completion
   const handlePreloaderLoaded = () => {
-    // Add visible class to main content for slide-up animation
-    if (appContentRef.current) {
-      // Small delay to ensure preloader fade out is complete
+    const preloader = document.querySelector('.preloader');
+    if (preloader) {
+      preloader.classList.add('fade-out');
+      // Wait for preloader fade out before showing main content
       setTimeout(() => {
         setPreloaderComplete(true);
-        appContentRef.current.classList.add('visible');
-      }, 100);
+        // Small delay before showing main content
+        setTimeout(() => {
+          if (appContentRef.current) {
+            appContentRef.current.classList.add('visible');
+          }
+        }, 100);
+      }, 500); // Match the preloader fade-out duration
     }
   };
 
@@ -2144,18 +2150,127 @@ function App() {
     setPdfViewerModal({ isOpen: false, url: '' });
   };
 
-  return (
-    <>
-      {!preloaderComplete && <Preloader onLoadComplete={handlePreloaderLoaded} />}
-      
-      {/* WebGL Background Canvas */}
-      <canvas ref={bgCanvasRef} id="bg-canvas" className="fixed top-0 left-0 w-full h-full -z-5 blur-[2px] opacity-85"></canvas>
+  // Add intersection observer setup
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.2,
+      rootMargin: '0px'
+    };
 
-      {/* Fallback Background for Low-end Devices */}
-      <div id="fallback-bg" className="fixed top-0 left-0 w-full h-full bg-gradient-to-br from-black via-slate-900 to-black -z-10 opacity-0"></div>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-reveal');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const animatedElements = document.querySelectorAll('.reveal-on-scroll');
+    animatedElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [preloaderComplete]);
+
+  // Certificate data
+  const certificates = [
+    {
+      id: 1,
+      title: "Oracle Cloud Infrastructure",
+      issuer: "Oracle OCI",
+      description: "Cloud Infrastructure Foundations",
+      icon: "fas fa-cloud",
+      file: "Oracle OCI.pdf"
+    },
+    {
+      id: 2,
+      title: "Oracle AI Foundations",
+      issuer: "Oracle OCI AI",
+      description: "AI and Machine Learning",
+      icon: "fas fa-brain",
+      file: "Oracle OCI AI.pdf"
+    },
+    {
+      id: 3,
+      title: "Problem Solving Intermediate",
+      issuer: "HackerRank",
+      description: "Advanced Problem-Solving Skills",
+      icon: "fas fa-code",
+      file: "problem_solving_intermediate certificate.pdf"
+    },
+    {
+      id: 4,
+      title: "Artificial Intelligence Mastery",
+      issuer: "Event Beep",
+      description: "AI Fundamentals and Applications",
+      icon: "fas fa-robot",
+      file: "Arekatla-Nishanth-Chowdary-Artificial-Intelligence-Certificate.pdf"
+    },
+    {
+      id: 5,
+      title: "Deep Learning",
+      issuer: "Advanced Neural Networks",
+      description: "Neural Networks and Deep Learning",
+      icon: "fas fa-network-wired",
+      file: "Deep_Learning_Arekatla_Certificate.pdf"
+    },
+    {
+      id: 6,
+      title: "Joy of Computing with Python",
+      issuer: "NPTEL",
+      description: "Python Programming Fundamentals",
+      icon: "fas fa-award",
+      file: "Joy of computing using python nptel.pdf"
+    },
+    {
+      id: 7,
+      title: "Introduction to Artificial Intelligence",
+      issuer: "Infosys Springboard",
+      description: "AI Fundamentals",
+      icon: "fas fa-robot",
+      file: "Introduction to artificial Intelligence infosys.pdf"
+    },
+    {
+      id: 8,
+      title: "Introduction to Deep Learning",
+      issuer: "Infosys Springboard",
+      description: "Deep Learning Fundamentals",
+      icon: "fas fa-brain",
+      file: "Introduction to Deep Learning infosys.pdf"
+    },
+    {
+      id: 9,
+      title: "Introduction to Python",
+      issuer: "Infosys Springboard",
+      description: "Python Programming",
+      icon: "fab fa-python",
+      file: "Introduction to python infosys.pdf"
+    }
+  ];
+
+  return (
+    <div className="app">
+      {/* WebGL Background Canvas */}
+      <canvas 
+        ref={bgCanvasRef} 
+        id="bg-canvas" 
+        className="fixed top-0 left-0 w-full h-full blur-[2px] opacity-85"
+      ></canvas>
+
+      {/* Fallback Background */}
+      <div 
+        id="fallback-bg" 
+        className="fixed top-0 left-0 w-full h-full bg-gradient-to-br from-black via-slate-900 to-black opacity-0"
+      ></div>
+
+      {/* Preloader */}
+      {!preloaderComplete && <Preloader onLoadComplete={handlePreloaderLoaded} />}
 
       {/* Main Content */}
-      <div id="app" ref={appContentRef} className="relative z-30 main-content">
+      <main 
+        ref={appContentRef} 
+        className={`relative z-10 min-h-screen ${preloaderComplete ? 'app-content visible' : 'app-content'}`}
+      >
         {/* Navigation */}
         <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-primary/50 border-b border-accent-purple/20">
           <div className="container py-4 flex justify-between items-center">
@@ -2212,93 +2327,95 @@ function App() {
         </section>
 
         {/* About Section */}
-        <section id="about" className="py-20">
-          <div className="container">
-            <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">About Me</h2>
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
-                <p className="text-lg mb-6">
-                  I am an AI undergraduate student at Amrita Vishwa Vidyapeetham, Amaravati, passionate about 
-                  developing AI-driven solutions for real-world problems. My focus areas include computer vision, 
-                  machine learning, and data analysis, with a special interest in safety applications.
-                </p>
-                <div className="flex gap-4">
-                  <a href={`${baseUrl}/Resume.pdf`} className="btn btn-primary" download>
-                  <i className="fas fa-download mr-2"></i> Download Resume
-                </a>
-                  <button onClick={() => openPdfViewer('/Resume.pdf')} className="btn btn-secondary">
-                    <i className="fas fa-eye mr-2"></i> View Resume
-                  </button>
-              </div>
-              </div>
-              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
-                <h3 className="text-2xl font-semibold mb-4">Technical Skills</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center">
-                    <div className="mr-3 text-accent-blue text-2xl">
-                      <i className="fas fa-brain"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Deep Learning</h4>
-                      <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                        <div className="h-full bg-accent-blue rounded-full" style={{ width: '90%' }}></div>
+        <section id="about" className="py-20 bg-secondary/20 relative z-20">
+          <div className="container mx-auto px-4">
+            <div className="reveal-on-scroll translate-x-[-50px] opacity-0">
+              <h2 className="text-4xl font-bold mb-12 text-center">About Me</h2>
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
+                  <p className="text-lg mb-6">
+                    I am an AI undergraduate student at Amrita Vishwa Vidyapeetham, Amaravati, passionate about 
+                    developing AI-driven solutions for real-world problems. My focus areas include computer vision, 
+                    machine learning, and data analysis, with a special interest in safety applications.
+                  </p>
+                  <div className="flex gap-4">
+                    <a href={`${baseUrl}/Resume.pdf`} className="btn btn-primary" download>
+                    <i className="fas fa-download mr-2"></i> Download Resume
+                  </a>
+                    <button onClick={() => openPdfViewer('/Resume.pdf')} className="btn btn-secondary">
+                      <i className="fas fa-eye mr-2"></i> View Resume
+                    </button>
+                </div>
+                </div>
+                <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
+                  <h3 className="text-2xl font-semibold mb-4">Technical Skills</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center">
+                      <div className="mr-3 text-accent-blue text-2xl">
+                        <i className="fas fa-brain"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Deep Learning</h4>
+                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
+                          <div className="h-full bg-accent-blue rounded-full" style={{ width: '90%' }}></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="mr-3 text-accent-blue text-2xl">
-                      <i className="fas fa-robot"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Machine Learning</h4>
-                      <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                        <div className="h-full bg-accent-purple rounded-full" style={{ width: '85%' }}></div>
+                    <div className="flex items-center">
+                      <div className="mr-3 text-accent-blue text-2xl">
+                        <i className="fas fa-robot"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Machine Learning</h4>
+                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
+                          <div className="h-full bg-accent-purple rounded-full" style={{ width: '85%' }}></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="mr-3 text-accent-blue text-2xl">
-                      <i className="fab fa-python"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Python</h4>
-                      <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                        <div className="h-full bg-accent-pink rounded-full" style={{ width: '95%' }}></div>
+                    <div className="flex items-center">
+                      <div className="mr-3 text-accent-blue text-2xl">
+                        <i className="fab fa-python"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Python</h4>
+                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
+                          <div className="h-full bg-accent-pink rounded-full" style={{ width: '95%' }}></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="mr-3 text-accent-blue text-2xl">
-                      <i className="fas fa-camera"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">OpenCV</h4>
-                      <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                        <div className="h-full bg-accent-blue rounded-full" style={{ width: '80%' }}></div>
+                    <div className="flex items-center">
+                      <div className="mr-3 text-accent-blue text-2xl">
+                        <i className="fas fa-camera"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">OpenCV</h4>
+                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
+                          <div className="h-full bg-accent-blue rounded-full" style={{ width: '80%' }}></div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl mt-6">
-                <h3 className="text-2xl font-semibold mb-4">HackerRank Achievements</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="text-yellow-500 text-2xl">
-                      <i className="fas fa-medal"></i>
+                <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl mt-6">
+                  <h3 className="text-2xl font-semibold mb-4">HackerRank Achievements</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="text-yellow-500 text-2xl">
+                        <i className="fas fa-medal"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Python</h4>
+                        <p className="text-sm text-gray-400">Gold Badge</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium">Python</h4>
-                      <p className="text-sm text-gray-400">Gold Badge</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="text-yellow-500 text-2xl">
-                      <i className="fas fa-medal"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Problem Solving</h4>
-                      <p className="text-sm text-gray-400">Gold Badge</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="text-yellow-500 text-2xl">
+                        <i className="fas fa-medal"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Problem Solving</h4>
+                        <p className="text-sm text-gray-400">Gold Badge</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2308,63 +2425,69 @@ function App() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-10 bg-secondary/30">
-          <div className="container">
+        <section className="py-20 bg-secondary/30 relative z-20">
+          <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Total Projects */}
-              <a href="#main-sections" onClick={() => setActiveSection('projects')} className="group">
-                <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center text-accent-blue mb-4">
-                      <i className="fas fa-code text-2xl"></i>
+              <div className="reveal-on-scroll translate-x-[-50px] opacity-0" style={{ animationDelay: '0.2s' }}>
+                <a href="#main-sections" onClick={() => setActiveSection('projects')} className="group">
+                  <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center text-accent-blue mb-4">
+                        <i className="fas fa-code text-2xl"></i>
+                      </div>
+                      <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
                     </div>
-                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
+                    <h3 className="text-4xl font-bold mb-2">4</h3>
+                    <p className="text-gray-400 font-medium">TOTAL PROJECTS</p>
+                    <p className="text-sm text-gray-500">View my work</p>
                   </div>
-                  <h3 className="text-4xl font-bold mb-2">4</h3>
-                  <p className="text-gray-400 font-medium">TOTAL PROJECTS</p>
-                  <p className="text-sm text-gray-500">View my work</p>
-                </div>
-              </a>
+                </a>
+              </div>
 
               {/* Certificates */}
-              <a 
-                href="#main-sections" 
-                onClick={() => setActiveSection('certificates')} 
-                className="group"
-              >
-                <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-full bg-accent-purple/10 flex items-center justify-center text-accent-purple mb-4">
-                      <i className="fas fa-certificate text-2xl"></i>
+              <div className="reveal-on-scroll translate-x-[-50px] opacity-0" style={{ animationDelay: '0.4s' }}>
+                <a 
+                  href="#main-sections" 
+                  onClick={() => setActiveSection('certificates')} 
+                  className="group"
+                >
+                  <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-accent-purple/10 flex items-center justify-center text-accent-purple mb-4">
+                        <i className="fas fa-certificate text-2xl"></i>
+                      </div>
+                      <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
                     </div>
-                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
+                    <h3 className="text-4xl font-bold mb-2">4</h3>
+                    <p className="text-gray-400 font-medium">CERTIFICATES</p>
+                    <p className="text-sm text-gray-500">Professional skills validated</p>
                   </div>
-                  <h3 className="text-4xl font-bold mb-2">4</h3>
-                  <p className="text-gray-400 font-medium">CERTIFICATES</p>
-                  <p className="text-sm text-gray-500">Professional skills validated</p>
-                </div>
-              </a>
+                </a>
+              </div>
 
               {/* Experience */}
-              <a href="#experience" className="group">
-                <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-full bg-accent-pink/10 flex items-center justify-center text-accent-pink mb-4">
-                      <i className="fas fa-globe text-2xl"></i>
+              <div className="reveal-on-scroll translate-x-[-50px] opacity-0" style={{ animationDelay: '0.6s' }}>
+                <a href="#experience" className="group">
+                  <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-accent-pink/10 flex items-center justify-center text-accent-pink mb-4">
+                        <i className="fas fa-globe text-2xl"></i>
+                      </div>
+                      <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
                     </div>
-                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
+                    <h3 className="text-4xl font-bold mb-2">Fresher</h3>
+                    <p className="text-gray-400 font-medium">YEARS OF EXPERIENCE</p>
+                    <p className="text-sm text-gray-500">View my journey</p>
                   </div>
-                  <h3 className="text-4xl font-bold mb-2">Fresher</h3>
-                  <p className="text-gray-400 font-medium">YEARS OF EXPERIENCE</p>
-                  <p className="text-sm text-gray-500">View my journey</p>
-                </div>
-              </a>
+                </a>
+              </div>
             </div>
           </div>
         </section>
 
         {/* New Tabbed Sections */}
-        <section id="main-sections" className="py-20 bg-secondary/30">
+        <section id="main-sections" className="py-20 bg-secondary/30 relative z-20">
           <div className="container">
             {/* Section Navigation */}
             <div className="grid grid-cols-3 gap-4 mb-12">
@@ -2415,25 +2538,31 @@ function App() {
             <div className="min-h-[600px]">
               {/* Projects Section */}
               <div className={activeSection === 'projects' ? 'block' : 'hidden'}>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {projects.map(project => (
-                    <div key={project.id} className="card project-card backdrop-blur-md bg-black/20" data-tilt data-tilt-max="5">
-                      <div className={`h-48 rounded-lg mb-4 bg-gradient-to-r ${project.gradient} flex items-center justify-center`}>
-                        <i className={`${project.icon} text-6xl`}></i>
-                      </div>
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                        <p className="mb-4 text-gray-300">{project.description}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                  {projects.map((project, index) => (
+                    <div 
+                      key={project.id} 
+                      className="reveal-on-scroll card backdrop-blur-md bg-black/20"
+                      style={{ 
+                        opacity: 0,
+                        transform: `translateX(${index % 2 === 0 ? '-50px' : '50px'})`,
+                        animationDelay: `${index * 0.2}s`
+                      }}
+                    >
+                      <img src={project.image} alt={project.title} className="w-full h-48 object-cover rounded-t-xl" />
+                      <div className="p-4 md:p-6">
+                        <h3 className="text-lg md:text-xl font-semibold mb-2">{project.title}</h3>
+                        <p className="text-sm md:text-base text-gray-400 mb-4">{project.description}</p>
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {project.tags.slice(0, 4).map((tag, index) => (
+                          {project.tags.map((tag, index) => (
                             <span key={index} className="bg-accent-blue/20 text-accent-blue text-xs px-2 py-1 rounded">{tag}</span>
                           ))}
                         </div>
-                        <div className="flex gap-4">
-                          <button className="btn btn-primary" onClick={() => openProjectModal(project.id)}>
+                        <div className="flex gap-2 md:gap-4 flex-col sm:flex-row">
+                          <button className="btn btn-primary text-sm md:text-base" onClick={() => openProjectModal(project.id)}>
                             <i className="fas fa-info-circle mr-2"></i> Details
                           </button>
-                          <a href={project.github} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                          <a href={project.github} className="btn btn-secondary text-sm md:text-base" target="_blank" rel="noopener noreferrer">
                             <i className="fab fa-github mr-2"></i> Live Demo
                           </a>
                         </div>
@@ -2445,151 +2574,33 @@ function App() {
 
               {/* Certificates Section */}
               <div className={activeSection === 'certificates' ? 'block' : 'hidden'}>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {/* Oracle Cloud Infrastructure */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-cloud"></i>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                  {certificates.map((cert, index) => (
+                    <div 
+                      key={cert.id}
+                      className="reveal-on-scroll card backdrop-blur-md bg-black/20 transition-all duration-1000 ease-out"
+                      style={{ 
+                        opacity: 0,
+                        transform: `translateX(${index % 2 === 0 ? '-100px' : '100px'})`,
+                        animationDelay: `${index * 0.3}s`
+                      }}
+                    >
+                      <div className="p-4 md:p-6 transform transition-transform duration-500 hover:scale-[1.02]">
+                        <div className="mb-4 text-2xl md:text-4xl text-accent-purple">
+                          <i className={cert.icon}></i>
+                        </div>
+                        <h3 className="text-lg md:text-xl font-semibold mb-2">{cert.title}</h3>
+                        <p className="text-sm md:text-base text-gray-300 mb-2">{cert.issuer}</p>
+                        <p className="text-xs md:text-sm text-gray-400 mb-4">{cert.description}</p>
+                        <button 
+                          onClick={() => openPdfViewer(`${baseUrl}/certificates/${cert.file}`)}
+                          className="btn btn-primary w-full text-sm md:text-base"
+                        >
+                          <i className="fas fa-eye mr-2"></i> View Certificate
+                        </button>
                       </div>
-                      <h3 className="text-xl font-semibold mb-2">Oracle Cloud Infrastructure</h3>
-                      <p className="text-gray-300 mb-4">Oracle OCI</p>
-                      <p className="text-sm text-gray-400 mb-4">Cloud Infrastructure Foundations</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Oracle OCI.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
                     </div>
-                  </div>
-
-                  {/* Oracle AI */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-brain"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Oracle AI Foundations</h3>
-                      <p className="text-gray-300 mb-4">Oracle OCI AI</p>
-                      <p className="text-sm text-gray-400 mb-4">AI and Machine Learning</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Oracle OCI AI.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* HackerRank Problem Solving */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-code"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Problem Solving Intermediate</h3>
-                      <p className="text-gray-300 mb-4">HackerRank</p>
-                      <p className="text-sm text-gray-400 mb-4">Advanced Problem-Solving Skills</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/problem_solving_intermediate certificate.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* AI Mastery */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-robot"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Artificial Intelligence Mastery</h3>
-                      <p className="text-gray-300 mb-4">Event Beep</p>
-                      <p className="text-sm text-gray-400 mb-4">AI Fundamentals and Applications</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Arekatla-Nishanth-Chowdary-Artificial-Intelligence-Certificate.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Deep Learning */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-network-wired"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Deep Learning</h3>
-                      <p className="text-gray-300 mb-4">Advanced Neural Networks</p>
-                      <p className="text-sm text-gray-400 mb-4">Neural Networks and Deep Learning</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Deep_Learning_Arekatla_Certificate.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* NPTEL Python */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-award"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Joy of Computing with Python</h3>
-                      <p className="text-gray-300 mb-4">NPTEL</p>
-                      <p className="text-sm text-gray-400 mb-4">Python Programming Fundamentals</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Joy of computing using python nptel.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Infosys AI */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-robot"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Introduction to Artificial Intelligence</h3>
-                      <p className="text-gray-300 mb-4">Infosys Springboard</p>
-                      <p className="text-sm text-gray-400 mb-4">AI Fundamentals</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Introduction to artificial Intelligence infosys.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Infosys Deep Learning */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fas fa-brain"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Introduction to Deep Learning</h3>
-                      <p className="text-gray-300 mb-4">Infosys Springboard</p>
-                      <p className="text-sm text-gray-400 mb-4">Deep Learning Fundamentals</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Introduction to Deep Learning infosys.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Infosys Python */}
-                  <div className="card backdrop-blur-md bg-black/20">
-                    <div className="p-6">
-                      <div className="mb-4 text-accent-purple text-4xl">
-                        <i className="fab fa-python"></i>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Introduction to Python</h3>
-                      <p className="text-gray-300 mb-4">Infosys Springboard</p>
-                      <p className="text-sm text-gray-400 mb-4">Python Programming</p>
-                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Introduction to python infosys.pdf`)}
-                         className="btn btn-primary w-full">
-                        <i className="fas fa-eye mr-2"></i> View Certificate
-                      </button>
-                    </div>
-                  </div>
-
+                  ))}
                 </div>
               </div>
 
@@ -2689,46 +2700,48 @@ function App() {
         </div>
 
         {/* Experience Section */}
-        <section id="experience" className="py-20 bg-secondary/30">
+        <section id="experience" className="py-20 bg-secondary/30 relative z-20">
           <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold mb-12 text-center">Experience</h2>
-            <div className="card backdrop-blur-md bg-black/20 p-8">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-accent-purple mb-2">AI & ML Developer</h3>
-                  <p className="text-gray-400">Fresher</p>
+            <div className="reveal-on-scroll translate-y-[50px] opacity-0">
+              <h2 className="text-4xl font-bold mb-12 text-center">Experience</h2>
+              <div className="card backdrop-blur-md bg-black/20 p-8">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold text-accent-purple mb-2">AI & ML Developer</h3>
+                    <p className="text-gray-400">Fresher</p>
+                  </div>
+                  <p className="text-gray-400 mt-2 md:mt-0">2025 - Present</p>
                 </div>
-                <p className="text-gray-400 mt-2 md:mt-0">2025 - Present</p>
+                <ul className="space-y-4 text-gray-300">
+                  <li className="flex items-start">
+                    <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                    <span>Developed AI-powered solutions using Python, TensorFlow, and PyTorch for various applications</span>
+                  </li>
+                  <li className="flex items-start">
+                    <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                    <span>Implemented deep learning models for image recognition and natural language processing tasks</span>
+                  </li>
+                  <li className="flex items-start">
+                    <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                    <span>Created and optimized machine learning workflows for data preprocessing and model training</span>
+                  </li>
+                  <li className="flex items-start">
+                    <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                    <span>Collaborated with cross-functional teams to integrate AI solutions into existing systems</span>
+                  </li>
+                  <li className="flex items-start">
+                    <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                    <span>Conducted research on emerging AI technologies and their potential applications</span>
+                  </li>
+                </ul>
               </div>
-              <ul className="space-y-4 text-gray-300">
-                <li className="flex items-start">
-                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
-                  <span>Developed AI-powered solutions using Python, TensorFlow, and PyTorch for various applications</span>
-                </li>
-                <li className="flex items-start">
-                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
-                  <span>Implemented deep learning models for image recognition and natural language processing tasks</span>
-                </li>
-                <li className="flex items-start">
-                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
-                  <span>Created and optimized machine learning workflows for data preprocessing and model training</span>
-                </li>
-                <li className="flex items-start">
-                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
-                  <span>Collaborated with cross-functional teams to integrate AI solutions into existing systems</span>
-                </li>
-                <li className="flex items-start">
-                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
-                  <span>Conducted research on emerging AI technologies and their potential applications</span>
-                </li>
-              </ul>
             </div>
           </div>
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="py-20">
-          <div className="container">
+        <section id="contact" className="py-20 bg-secondary/30 relative z-20">
+          <div className="container mx-auto px-4">
             <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">Get In Touch</h2>
             <div className="grid md:grid-cols-2 gap-10">
               <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
@@ -2815,71 +2828,131 @@ function App() {
             </div>
           </div>
         </footer>
-      </div>
+      </main>
 
-      {/* PDF Viewer Modal */}
-      <div 
-        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 ${pdfViewerModal.isOpen ? 'flex' : 'hidden'}`}
-        onClick={closePdfViewer}>
+      {/* Modals */}
+      <div className="relative z-50">
+        {/* PDF Viewer Modal */}
         <div 
-          className="w-full h-[80vh] md:max-w-4xl md:h-[90vh] bg-secondary rounded-xl p-4 md:p-6 shadow-2xl flex flex-col relative"
-          onClick={(e) => e.stopPropagation()}>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl md:text-2xl font-bold">Document Viewer</h3>
-            <button className="close-modal text-xl text-gray-400 hover:text-white" onClick={closePdfViewer}>
-              <i className="fas fa-times"></i>
-            </button>
-          </div>
-          <div className="flex-1 w-full relative bg-white rounded-lg overflow-hidden">
-            <object 
-              data={pdfViewerModal.url}
-              type="application/pdf"
-              className="absolute inset-0 w-full h-full"
-              style={{ minHeight: '100%' }}>
-              <p>Your browser does not support PDFs. 
-                <a href={pdfViewerModal.url} target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">
-                  Click here to download the PDF
-                </a>
-              </p>
-            </object>
-          </div>
-        </div>
-      </div>
-
-      {/* PDF Viewer Modal */}
-      {pdfViewerModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75">
-          <div className="relative w-full max-w-4xl h-[90vh] bg-gray-900 rounded-lg shadow-xl">
-            <button
-              onClick={closePdfViewer}
-              className="absolute top-4 right-4 text-white hover:text-accent-purple transition-colors"
-            >
-              <i className="fas fa-times text-2xl"></i>
-            </button>
-            <div className="h-full p-4">
-              <object
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 ${pdfViewerModal.isOpen ? 'flex' : 'hidden'}`}
+          onClick={closePdfViewer}>
+          <div 
+            className="w-full h-[80vh] md:max-w-4xl md:h-[90vh] bg-secondary rounded-xl p-4 md:p-6 shadow-2xl flex flex-col relative"
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl md:text-2xl font-bold">Document Viewer</h3>
+              <button className="close-modal text-xl text-gray-400 hover:text-white" onClick={closePdfViewer}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="flex-1 w-full relative bg-white rounded-lg overflow-hidden">
+              <object 
                 data={pdfViewerModal.url}
                 type="application/pdf"
-                className="w-full h-full rounded-lg"
-              >
-                <div className="flex flex-col items-center justify-center h-full text-white">
-                  <p className="mb-4">Unable to display PDF directly.</p>
-                  <a
-                    href={pdfViewerModal.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary"
-                  >
-                    <i className="fas fa-download mr-2"></i>
-                    Download PDF
+                className="absolute inset-0 w-full h-full"
+                style={{ minHeight: '100%' }}>
+                <p>Your browser does not support PDFs. 
+                  <a href={pdfViewerModal.url} target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">
+                    Click here to download the PDF
                   </a>
-                </div>
+                </p>
               </object>
             </div>
           </div>
         </div>
-      )}
-    </>
+
+        {/* PDF Viewer Modal */}
+        {pdfViewerModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75">
+            <div className="relative w-full max-w-4xl h-[90vh] bg-gray-900 rounded-lg shadow-xl">
+              <button
+                onClick={closePdfViewer}
+                className="absolute top-4 right-4 text-white hover:text-accent-purple transition-colors"
+              >
+                <i className="fas fa-times text-2xl"></i>
+              </button>
+              <div className="h-full p-4">
+                <object
+                  data={pdfViewerModal.url}
+                  type="application/pdf"
+                  className="w-full h-full rounded-lg"
+                >
+                  <div className="flex flex-col items-center justify-center h-full text-white">
+                    <p className="mb-4">Unable to display PDF directly.</p>
+                    <a
+                      href={pdfViewerModal.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary"
+                    >
+                      <i className="fas fa-download mr-2"></i>
+                      Download PDF
+                    </a>
+                  </div>
+                </object>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Add these keyframe animations to your existing styles */}
+      <style jsx>{`
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-50px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(50px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-slide-in-left {
+          animation: slideInLeft 0.7s ease-out forwards;
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.7s ease-out forwards;
+        }
+
+        .reveal-on-scroll {
+          transition: all 0.7s ease-out;
+        }
+
+        .animate-reveal {
+          opacity: 1 !important;
+          transform: translate(0, 0) !important;
+        }
+
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(50px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-slide-in-up {
+          animation: slideInUp 0.7s ease-out forwards;
+        }
+      `}</style>
+    </div>
   );
 }
 
