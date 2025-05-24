@@ -2152,24 +2152,26 @@ function App() {
 
   // Add intersection observer setup
   useEffect(() => {
-    const observerOptions = {
-      threshold: 0.2,
-      rootMargin: '0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-reveal');
-          observer.unobserve(entry.target);
-        }
+    if (preloaderComplete) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.transform = 'translateX(0)';
+            entry.target.style.opacity = '1';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px'
       });
-    }, observerOptions);
 
-    const animatedElements = document.querySelectorAll('.reveal-on-scroll');
-    animatedElements.forEach(el => observer.observe(el));
+      document.querySelectorAll('.reveal-on-scroll').forEach(element => {
+        observer.observe(element);
+      });
 
-    return () => observer.disconnect();
+      return () => observer.disconnect();
+    }
   }, [preloaderComplete]);
 
   // Certificate data

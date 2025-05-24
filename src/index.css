@@ -82,3 +82,25 @@
 .modal {
   z-index: 100;
 }
+
+.reveal-on-scroll {
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Ensure initial state is maintained until intersection */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateX(-100px);
+}
+
+/* For elements that should slide from right */
+.reveal-on-scroll[style*="transform: translateX(100px)"] {
+  transform: translateX(100px);
+}
+
+/* Add smooth transition when revealed */
+.reveal-on-scroll.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
