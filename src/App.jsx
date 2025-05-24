@@ -2351,83 +2351,20 @@ function App() {
                   </p>
                   <div className="flex gap-4">
                     <a href={`${baseUrl}/Resume.pdf`} className="btn btn-primary" download>
-                    <i className="fas fa-download mr-2"></i> Download Resume
-                  </a>
-                    <button onClick={() => openPdfViewer('/Resume.pdf')} className="btn btn-secondary">
+                      <i className="fas fa-download mr-2"></i> Download Resume
+                    </a>
+                    <button onClick={() => openPdfViewer(`${baseUrl}/Resume.pdf`)} className="btn btn-secondary">
                       <i className="fas fa-eye mr-2"></i> View Resume
                     </button>
-                </div>
-                </div>
-                <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
-                  <h3 className="text-2xl font-semibold mb-4">Technical Skills</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center">
-                      <div className="mr-3 text-accent-blue text-2xl">
-                        <i className="fas fa-brain"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Deep Learning</h4>
-                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                          <div className="h-full bg-accent-blue rounded-full" style={{ width: '90%' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="mr-3 text-accent-blue text-2xl">
-                        <i className="fas fa-robot"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Machine Learning</h4>
-                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                          <div className="h-full bg-accent-purple rounded-full" style={{ width: '85%' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="mr-3 text-accent-blue text-2xl">
-                        <i className="fab fa-python"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Python</h4>
-                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                          <div className="h-full bg-accent-pink rounded-full" style={{ width: '95%' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="mr-3 text-accent-blue text-2xl">
-                        <i className="fas fa-camera"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">OpenCV</h4>
-                        <div className="h-2 w-full bg-secondary/50 rounded-full mt-2">
-                          <div className="h-full bg-accent-blue rounded-full" style={{ width: '80%' }}></div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
-                <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl mt-6">
-                  <h3 className="text-2xl font-semibold mb-4">HackerRank Achievements</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-yellow-500 text-2xl">
-                        <i className="fas fa-medal"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Python</h4>
-                        <p className="text-sm text-gray-400">Gold Badge</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="text-yellow-500 text-2xl">
-                        <i className="fas fa-medal"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Problem Solving</h4>
-                        <p className="text-sm text-gray-400">Gold Badge</p>
-                      </div>
-                    </div>
+                <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl flex items-center justify-center">
+                  <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-accent-purple/20">
+                    <img 
+                      src={`${baseUrl}/certificates/images/me.jpg`} 
+                      alt="Nishanth Chowdary Arekatla"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 object-top"
+                    />
                   </div>
                 </div>
               </div>
