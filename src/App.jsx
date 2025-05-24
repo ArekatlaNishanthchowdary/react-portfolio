@@ -17,6 +17,7 @@ function App() {
   const [formStatus, setFormStatus] = useState({ message: '', type: '' });
   const mainContainerRef = useRef(null);
   const appContentRef = useRef(null);
+  const [activeSection, setActiveSection] = useState('projects'); // Add this new state
 
   // Initialize EmailJS
   useEffect(() => {
@@ -2136,13 +2137,11 @@ function App() {
   
   // Handle PDF viewer modal
   const openPdfViewer = (url) => {
-    setPdfViewerModal({ isOpen: true, url: `${baseUrl}${url}` });
-    document.body.classList.add('overflow-hidden');
+    setPdfViewerModal({ isOpen: true, url: url });
   };
 
   const closePdfViewer = () => {
     setPdfViewerModal({ isOpen: false, url: '' });
-    document.body.classList.remove('overflow-hidden');
   };
 
   return (
@@ -2197,7 +2196,11 @@ function App() {
               <h2 className="text-xl md:text-2xl text-accent-blue mb-4">AI Undergraduate Student</h2>
               <div id="typewriter" className="text-lg md:text-xl mb-8 h-8">Innovating AI for a Safer Future</div>
               <div className="flex flex-wrap gap-4 relative z-20">
-                <a href="#projects" className="btn btn-primary inline-flex items-center justify-center min-w-[160px]">
+                <a 
+                  href="#main-sections" 
+                  onClick={() => setActiveSection('projects')} 
+                  className="btn btn-primary inline-flex items-center justify-center min-w-[160px]"
+                >
                   <i className="fas fa-code-branch mr-2"></i> Explore Projects
                 </a>
                 <a href="#contact" className="btn btn-secondary inline-flex items-center justify-center min-w-[160px]">
@@ -2277,87 +2280,368 @@ function App() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Certificates Section */}
-        <section id="certificates" className="py-20 bg-secondary/30">
-          <div className="container">
-            <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">Certificates</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="card backdrop-blur-md bg-black/20">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Joy of Computing with Python</h3>
-                  <p className="text-gray-300 mb-4">NPTEL</p>
-                  <p className="text-sm text-gray-400 mb-4">Issued Dec 2024</p>
-                  <p className="text-sm text-gray-400 mb-4">Credential ID: NPTEL24CS113S755802494</p>
-                  <button onClick={() => openPdfViewer('/certificates/Joy of computing using python nptel.pdf')} className="text-accent-blue hover:underline">
-                    <i className="fas fa-eye mr-1"></i> View Certificate
-                  </button>
-                </div>
-              </div>
-              <div className="card backdrop-blur-md bg-black/20">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Introduction to Artificial Intelligence</h3>
-                  <p className="text-gray-300 mb-4">Infosys Springboard</p>
-                  <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
-                  <p className="text-sm text-gray-400 mb-4">Skills: Artificial Intelligence (AI)</p>
-                  <button onClick={() => openPdfViewer('/certificates/Introduction to artificial Intelligence infosys.pdf')} className="text-accent-blue hover:underline">
-                    <i className="fas fa-eye mr-1"></i> View Certificate
-                  </button>
-                </div>
-              </div>
-              <div className="card backdrop-blur-md bg-black/20">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Introduction to Deep Learning</h3>
-                  <p className="text-gray-300 mb-4">Infosys Springboard</p>
-                  <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
-                  <p className="text-sm text-gray-400 mb-4">Skills: Deep Learning</p>
-                  <button onClick={() => openPdfViewer('/certificates/Introduction to Deep Learning infosys.pdf')} className="text-accent-blue hover:underline">
-                    <i className="fas fa-eye mr-1"></i> View Certificate
-                  </button>
-                </div>
-              </div>
-              <div className="card backdrop-blur-md bg-black/20">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Introduction to Python</h3>
-                  <p className="text-gray-300 mb-4">Infosys Springboard</p>
-                  <p className="text-sm text-gray-400 mb-4">Issued May 2025</p>
-                  <p className="text-sm text-gray-400 mb-4">Skills: Python (Programming Language)</p>
-                  <button onClick={() => openPdfViewer('/certificates/Introduction to python infosys.pdf')} className="text-accent-blue hover:underline">
-                    <i className="fas fa-eye mr-1"></i> View Certificate
-                  </button>
+              <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl mt-6">
+                <h3 className="text-2xl font-semibold mb-4">HackerRank Achievements</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-yellow-500 text-2xl">
+                      <i className="fas fa-medal"></i>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Python</h4>
+                      <p className="text-sm text-gray-400">Gold Badge</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-yellow-500 text-2xl">
+                      <i className="fas fa-medal"></i>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Problem Solving</h4>
+                      <p className="text-sm text-gray-400">Gold Badge</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Projects Section */}
-        <section id="projects" className="py-20 bg-secondary/30">
+        {/* Stats Section */}
+        <section className="py-10 bg-secondary/30">
           <div className="container">
-            <h2 className="section-title backdrop-blur-md bg-black/10 p-2 rounded-lg inline-block mb-6">My Projects</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projects.map(project => (
-                <div key={project.id} className="card project-card backdrop-blur-md bg-black/20" data-tilt data-tilt-max="5">
-                  <div className={`h-48 rounded-lg mb-4 bg-gradient-to-r ${project.gradient} flex items-center justify-center`}>
-                    <i className={`${project.icon} text-6xl`}></i>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Total Projects */}
+              <a href="#projects" className="group">
+                <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center text-accent-blue mb-4">
+                      <i className="fas fa-code text-2xl"></i>
+                    </div>
+                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                  <p className="mb-4 text-gray-300">{project.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tags.slice(0, 4).map((tag, index) => (
-                      <span key={index} className="bg-accent-blue/20 text-accent-blue text-xs px-2 py-1 rounded">{tag}</span>
-                    ))}
-                  </div>
-                  <button 
-                    className="text-sm text-accent-blue hover:underline" 
-                    onClick={() => openProjectModal(project.id)}>
-                    <i className="fas fa-circle-info mr-1"></i> Learn More
-                  </button>
+                  <h3 className="text-4xl font-bold mb-2">4</h3>
+                  <p className="text-gray-400 font-medium">TOTAL PROJECTS</p>
+                  <p className="text-sm text-gray-500">Innovative web solutions crafted</p>
                 </div>
-              ))}
+              </a>
+
+              {/* Certificates */}
+              <a 
+                href="#main-sections" 
+                onClick={() => setActiveSection('certificates')} 
+                className="group"
+              >
+                <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-full bg-accent-purple/10 flex items-center justify-center text-accent-purple mb-4">
+                      <i className="fas fa-certificate text-2xl"></i>
+                    </div>
+                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
+                  </div>
+                  <h3 className="text-4xl font-bold mb-2">4</h3>
+                  <p className="text-gray-400 font-medium">CERTIFICATES</p>
+                  <p className="text-sm text-gray-500">Professional skills validated</p>
+                </div>
+              </a>
+
+              {/* Experience */}
+              <a href="#experience" className="group">
+                <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-full bg-accent-pink/10 flex items-center justify-center text-accent-pink mb-4">
+                      <i className="fas fa-globe text-2xl"></i>
+                    </div>
+                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
+                  </div>
+                  <h3 className="text-4xl font-bold mb-2">Fresher</h3>
+                  <p className="text-gray-400 font-medium">YEARS OF EXPERIENCE</p>
+                  <p className="text-sm text-gray-500">View my journey</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* New Tabbed Sections */}
+        <section id="main-sections" className="py-20 bg-secondary/30">
+          <div className="container">
+            {/* Section Navigation */}
+            <div className="grid grid-cols-3 gap-4 mb-12">
+              <button 
+                onClick={() => setActiveSection('projects')}
+                className={`p-6 rounded-xl backdrop-blur-md transition-all ${
+                  activeSection === 'projects' 
+                    ? 'bg-accent-blue/20 border-2 border-accent-blue' 
+                    : 'bg-black/20 hover:bg-black/30'
+                }`}
+              >
+                <div className="flex items-center justify-center mb-2">
+                  <i className="fas fa-code text-2xl"></i>
+                </div>
+                <h3 className="text-xl font-semibold text-center">Projects</h3>
+              </button>
+
+              <button 
+                onClick={() => setActiveSection('certificates')}
+                className={`p-6 rounded-xl backdrop-blur-md transition-all ${
+                  activeSection === 'certificates' 
+                    ? 'bg-accent-purple/20 border-2 border-accent-purple' 
+                    : 'bg-black/20 hover:bg-black/30'
+                }`}
+              >
+                <div className="flex items-center justify-center mb-2">
+                  <i className="fas fa-certificate text-2xl"></i>
+                </div>
+                <h3 className="text-xl font-semibold text-center">Certificates</h3>
+              </button>
+
+              <button 
+                onClick={() => setActiveSection('techstack')}
+                className={`p-6 rounded-xl backdrop-blur-md transition-all ${
+                  activeSection === 'techstack' 
+                    ? 'bg-accent-pink/20 border-2 border-accent-pink' 
+                    : 'bg-black/20 hover:bg-black/30'
+                }`}
+              >
+                <div className="flex items-center justify-center mb-2">
+                  <i className="fas fa-layer-group text-2xl"></i>
+                </div>
+                <h3 className="text-xl font-semibold text-center">Tech Stack</h3>
+              </button>
+            </div>
+
+            {/* Section Content */}
+            <div className="min-h-[600px]">
+              {/* Projects Section */}
+              <div className={activeSection === 'projects' ? 'block' : 'hidden'}>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {projects.map(project => (
+                    <div key={project.id} className="card project-card backdrop-blur-md bg-black/20" data-tilt data-tilt-max="5">
+                      <div className={`h-48 rounded-lg mb-4 bg-gradient-to-r ${project.gradient} flex items-center justify-center`}>
+                        <i className={`${project.icon} text-6xl`}></i>
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                        <p className="mb-4 text-gray-300">{project.description}</p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {project.tags.slice(0, 4).map((tag, index) => (
+                            <span key={index} className="bg-accent-blue/20 text-accent-blue text-xs px-2 py-1 rounded">{tag}</span>
+                          ))}
+                        </div>
+                        <div className="flex gap-4">
+                          <button className="btn btn-primary" onClick={() => openProjectModal(project.id)}>
+                            <i className="fas fa-info-circle mr-2"></i> Details
+                          </button>
+                          <a href={project.github} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                            <i className="fab fa-github mr-2"></i> Live Demo
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Certificates Section */}
+              <div className={activeSection === 'certificates' ? 'block' : 'hidden'}>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {/* Oracle Cloud Infrastructure */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-cloud"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Oracle Cloud Infrastructure</h3>
+                      <p className="text-gray-300 mb-4">Oracle OCI</p>
+                      <p className="text-sm text-gray-400 mb-4">Cloud Infrastructure Foundations</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Oracle OCI.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Oracle AI */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-brain"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Oracle AI Foundations</h3>
+                      <p className="text-gray-300 mb-4">Oracle OCI AI</p>
+                      <p className="text-sm text-gray-400 mb-4">AI and Machine Learning</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Oracle OCI AI.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* HackerRank Problem Solving */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-code"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Problem Solving Intermediate</h3>
+                      <p className="text-gray-300 mb-4">HackerRank</p>
+                      <p className="text-sm text-gray-400 mb-4">Advanced Problem-Solving Skills</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/problem_solving_intermediate certificate.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* AI Mastery */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-robot"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Artificial Intelligence Mastery</h3>
+                      <p className="text-gray-300 mb-4">Event Beep</p>
+                      <p className="text-sm text-gray-400 mb-4">AI Fundamentals and Applications</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Arekatla-Nishanth-Chowdary-Artificial-Intelligence-Certificate.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Deep Learning */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-network-wired"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Deep Learning</h3>
+                      <p className="text-gray-300 mb-4">Advanced Neural Networks</p>
+                      <p className="text-sm text-gray-400 mb-4">Neural Networks and Deep Learning</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Deep_Learning_Arekatla_Certificate.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* NPTEL Python */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-award"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Joy of Computing with Python</h3>
+                      <p className="text-gray-300 mb-4">NPTEL</p>
+                      <p className="text-sm text-gray-400 mb-4">Python Programming Fundamentals</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Joy of computing using python nptel.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Infosys AI */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-robot"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Introduction to Artificial Intelligence</h3>
+                      <p className="text-gray-300 mb-4">Infosys Springboard</p>
+                      <p className="text-sm text-gray-400 mb-4">AI Fundamentals</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Introduction to artificial Intelligence infosys.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Infosys Deep Learning */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-brain"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Introduction to Deep Learning</h3>
+                      <p className="text-gray-300 mb-4">Infosys Springboard</p>
+                      <p className="text-sm text-gray-400 mb-4">Deep Learning Fundamentals</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Introduction to Deep Learning infosys.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Infosys Python */}
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fab fa-python"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Introduction to Python</h3>
+                      <p className="text-gray-300 mb-4">Infosys Springboard</p>
+                      <p className="text-sm text-gray-400 mb-4">Python Programming</p>
+                      <button onClick={() => openPdfViewer(`${baseUrl}/certificates/Introduction to python infosys.pdf`)}
+                         className="btn btn-primary w-full">
+                        <i className="fas fa-eye mr-2"></i> View Certificate
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Tech Stack Section */}
+              <div className={activeSection === 'techstack' ? 'block' : 'hidden'}>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-pink text-4xl">
+                        <i className="fas fa-brain"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">AI & ML</h3>
+                      <ul className="space-y-2 text-gray-300">
+                        <li><i className="fas fa-check text-accent-pink mr-2"></i>TensorFlow</li>
+                        <li><i className="fas fa-check text-accent-pink mr-2"></i>PyTorch</li>
+                        <li><i className="fas fa-check text-accent-pink mr-2"></i>Scikit-learn</li>
+                        <li><i className="fas fa-check text-accent-pink mr-2"></i>OpenCV</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-blue text-4xl">
+                        <i className="fas fa-code"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Programming</h3>
+                      <ul className="space-y-2 text-gray-300">
+                        <li><i className="fas fa-check text-accent-blue mr-2"></i>Python</li>
+                        <li><i className="fas fa-check text-accent-blue mr-2"></i>JavaScript</li>
+                        <li><i className="fas fa-check text-accent-blue mr-2"></i>React</li>
+                        <li><i className="fas fa-check text-accent-blue mr-2"></i>Node.js</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="card backdrop-blur-md bg-black/20">
+                    <div className="p-6">
+                      <div className="mb-4 text-accent-purple text-4xl">
+                        <i className="fas fa-database"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Data & Tools</h3>
+                      <ul className="space-y-2 text-gray-300">
+                        <li><i className="fas fa-check text-accent-purple mr-2"></i>SQL</li>
+                        <li><i className="fas fa-check text-accent-purple mr-2"></i>MongoDB</li>
+                        <li><i className="fas fa-check text-accent-purple mr-2"></i>Git</li>
+                        <li><i className="fas fa-check text-accent-purple mr-2"></i>Docker</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -2403,6 +2687,44 @@ function App() {
             </div>
           ))}
         </div>
+
+        {/* Experience Section */}
+        <section id="experience" className="py-20 bg-secondary/30">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold mb-12 text-center">Experience</h2>
+            <div className="card backdrop-blur-md bg-black/20 p-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-accent-purple mb-2">AI & ML Developer</h3>
+                  <p className="text-gray-400">Fresher</p>
+                </div>
+                <p className="text-gray-400 mt-2 md:mt-0">2025 - Present</p>
+              </div>
+              <ul className="space-y-4 text-gray-300">
+                <li className="flex items-start">
+                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                  <span>Developed AI-powered solutions using Python, TensorFlow, and PyTorch for various applications</span>
+                </li>
+                <li className="flex items-start">
+                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                  <span>Implemented deep learning models for image recognition and natural language processing tasks</span>
+                </li>
+                <li className="flex items-start">
+                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                  <span>Created and optimized machine learning workflows for data preprocessing and model training</span>
+                </li>
+                <li className="flex items-start">
+                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                  <span>Collaborated with cross-functional teams to integrate AI solutions into existing systems</span>
+                </li>
+                <li className="flex items-start">
+                  <i className="fas fa-check-circle text-accent-purple mt-1 mr-3"></i>
+                  <span>Conducted research on emerging AI technologies and their potential applications</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* Contact Section */}
         <section id="contact" className="py-20">
@@ -2500,7 +2822,7 @@ function App() {
         className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 ${pdfViewerModal.isOpen ? 'flex' : 'hidden'}`}
         onClick={closePdfViewer}>
         <div 
-          className="w-full h-full md:max-w-4xl md:h-auto bg-secondary rounded-xl p-4 md:p-6 shadow-2xl flex flex-col"
+          className="w-full h-[80vh] md:max-w-4xl md:h-[90vh] bg-secondary rounded-xl p-4 md:p-6 shadow-2xl flex flex-col relative"
           onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl md:text-2xl font-bold">Document Viewer</h3>
@@ -2508,16 +2830,55 @@ function App() {
               <i className="fas fa-times"></i>
             </button>
           </div>
-          <div className="flex-1 w-full h-full min-h-[50vh] md:min-h-[70vh] relative">
-            <iframe 
-              src={`${pdfViewerModal.url}#toolbar=0&view=FitH`}
-              className="absolute inset-0 w-full h-full rounded-lg"
-              style={{ border: 'none' }}
-              title="PDF Viewer">
-            </iframe>
+          <div className="flex-1 w-full relative bg-white rounded-lg overflow-hidden">
+            <object 
+              data={pdfViewerModal.url}
+              type="application/pdf"
+              className="absolute inset-0 w-full h-full"
+              style={{ minHeight: '100%' }}>
+              <p>Your browser does not support PDFs. 
+                <a href={pdfViewerModal.url} target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">
+                  Click here to download the PDF
+                </a>
+              </p>
+            </object>
           </div>
         </div>
       </div>
+
+      {/* PDF Viewer Modal */}
+      {pdfViewerModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75">
+          <div className="relative w-full max-w-4xl h-[90vh] bg-gray-900 rounded-lg shadow-xl">
+            <button
+              onClick={closePdfViewer}
+              className="absolute top-4 right-4 text-white hover:text-accent-purple transition-colors"
+            >
+              <i className="fas fa-times text-2xl"></i>
+            </button>
+            <div className="h-full p-4">
+              <object
+                data={pdfViewerModal.url}
+                type="application/pdf"
+                className="w-full h-full rounded-lg"
+              >
+                <div className="flex flex-col items-center justify-center h-full text-white">
+                  <p className="mb-4">Unable to display PDF directly.</p>
+                  <a
+                    href={pdfViewerModal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                  >
+                    <i className="fas fa-download mr-2"></i>
+                    Download PDF
+                  </a>
+                </div>
+              </object>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
