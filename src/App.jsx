@@ -4,20 +4,36 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { gsap } from 'gsap';
 import emailjs from '@emailjs/browser';
 import VanillaTilt from 'vanilla-tilt';
+import Preloader from './components/Preloader';
 import './index.css';
 
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [pdfViewerModal, setPdfViewerModal] = useState({ isOpen: false, url: '' });
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
   const bgCanvasRef = useRef(null);
   const contactFormRef = useRef(null);
   const [formStatus, setFormStatus] = useState({ message: '', type: '' });
+  const mainContainerRef = useRef(null);
+  const appContentRef = useRef(null);
 
   // Initialize EmailJS
   useEffect(() => {
     emailjs.init("mHOKmkvlGWOsdMT-b")
   }, []);
+
+  // Handle preloader completion
+  const handlePreloaderLoaded = () => {
+    // Add visible class to main content for slide-up animation
+    if (appContentRef.current) {
+      // Small delay to ensure preloader fade out is complete
+      setTimeout(() => {
+        setPreloaderComplete(true);
+        appContentRef.current.classList.add('visible');
+      }, 100);
+    }
+  };
 
   // Initialize WebGL background
   useEffect(() => {
@@ -412,7 +428,7 @@ function App() {
                   const moveSpeed = Math.min(distToTarget * 0.1, 2.0);
                   toTarget.normalize().multiplyScalar(moveSpeed);
                   particle.position.add(toTarget);
-                } else {
+          } else {
                   // Snap to exact position when close
                   particle.position.copy(particle.targetPosition);
                 }
@@ -2131,6 +2147,8 @@ function App() {
 
   return (
     <>
+      {!preloaderComplete && <Preloader onLoadComplete={handlePreloaderLoaded} />}
+      
       {/* WebGL Background Canvas */}
       <canvas ref={bgCanvasRef} id="bg-canvas" className="fixed top-0 left-0 w-full h-full -z-5 blur-[2px] opacity-85"></canvas>
 
@@ -2138,7 +2156,7 @@ function App() {
       <div id="fallback-bg" className="fixed top-0 left-0 w-full h-full bg-gradient-to-br from-black via-slate-900 to-black -z-10 opacity-0"></div>
 
       {/* Main Content */}
-      <div id="app" className="relative z-30">
+      <div id="app" ref={appContentRef} className="relative z-30 main-content">
         {/* Navigation */}
         <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-primary/50 border-b border-accent-purple/20">
           <div className="container py-4 flex justify-between items-center">
@@ -2203,12 +2221,12 @@ function App() {
                 </p>
                 <div className="flex gap-4">
                   <a href={`${baseUrl}/Resume.pdf`} className="btn btn-primary" download>
-                    <i className="fas fa-download mr-2"></i> Download Resume
-                  </a>
+                  <i className="fas fa-download mr-2"></i> Download Resume
+                </a>
                   <button onClick={() => openPdfViewer('/Resume.pdf')} className="btn btn-secondary">
                     <i className="fas fa-eye mr-2"></i> View Resume
                   </button>
-                </div>
+              </div>
               </div>
               <div className="backdrop-blur-md bg-black/10 p-6 rounded-xl">
                 <h3 className="text-2xl font-semibold mb-4">Technical Skills</h3>
