@@ -2449,7 +2449,7 @@ function App() {
                       </div>
                       <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
                     </div>
-                    <h3 className="text-4xl font-bold mb-2">4</h3>
+                    <h3 className="text-4xl font-bold mb-2">3</h3>
                     <p className="text-gray-400 font-medium">TOTAL PROJECTS</p>
                     <p className="text-sm text-gray-500">View my work</p>
                   </div>
