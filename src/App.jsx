@@ -2312,7 +2312,7 @@ function App() {
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Total Projects */}
-              <a href="#projects" className="group">
+              <a href="#main-sections" onClick={() => setActiveSection('projects')} className="group">
                 <div className="backdrop-blur-md bg-black/20 p-6 rounded-xl hover:bg-black/30 transition-all cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div className="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center text-accent-blue mb-4">
@@ -2322,7 +2322,7 @@ function App() {
                   </div>
                   <h3 className="text-4xl font-bold mb-2">4</h3>
                   <p className="text-gray-400 font-medium">TOTAL PROJECTS</p>
-                  <p className="text-sm text-gray-500">Innovative web solutions crafted</p>
+                  <p className="text-sm text-gray-500">View my work</p>
                 </div>
               </a>
 
