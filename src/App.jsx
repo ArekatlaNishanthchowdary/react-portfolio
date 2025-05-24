@@ -2182,7 +2182,8 @@ function App() {
       issuer: "Oracle OCI",
       description: "Cloud Infrastructure Foundations",
       icon: "fas fa-cloud",
-      file: "Oracle OCI.pdf"
+      file: "Oracle OCI.pdf",
+      image: "certificates/images/Oracle OCI.png"
     },
     {
       id: 2,
@@ -2190,7 +2191,8 @@ function App() {
       issuer: "Oracle OCI AI",
       description: "AI and Machine Learning",
       icon: "fas fa-brain",
-      file: "Oracle OCI AI.pdf"
+      file: "Oracle OCI AI.pdf",
+      image: "certificates/images/Oracle OCI Al.png"
     },
     {
       id: 3,
@@ -2198,7 +2200,8 @@ function App() {
       issuer: "HackerRank",
       description: "Advanced Problem-Solving Skills",
       icon: "fas fa-code",
-      file: "problem_solving_intermediate certificate.pdf"
+      file: "problem_solving_intermediate certificate.pdf",
+      image: "certificates/images/problem_solving_intermediate certificate.png"
     },
     {
       id: 4,
@@ -2206,7 +2209,8 @@ function App() {
       issuer: "Event Beep",
       description: "AI Fundamentals and Applications",
       icon: "fas fa-robot",
-      file: "Arekatla-Nishanth-Chowdary-Artificial-Intelligence-Certificate.pdf"
+      file: "Arekatla-Nishanth-Chowdary-Artificial-Intelligence-Certificate.pdf",
+      image: "certificates/images/Arekatla-Nishanth-Chowdary-Artificial-lntelligence-Certificate.png"
     },
     {
       id: 5,
@@ -2214,7 +2218,8 @@ function App() {
       issuer: "Advanced Neural Networks",
       description: "Neural Networks and Deep Learning",
       icon: "fas fa-network-wired",
-      file: "Deep_Learning_Arekatla_Certificate.pdf"
+      file: "Deep_Learning_Arekatla_Certificate.pdf",
+      image: "certificates/images/Deep_Learning_Arekatla_Certificate.png"
     },
     {
       id: 6,
@@ -2222,7 +2227,8 @@ function App() {
       issuer: "NPTEL",
       description: "Python Programming Fundamentals",
       icon: "fas fa-award",
-      file: "Joy of computing using python nptel.pdf"
+      file: "Joy of computing using python nptel.pdf",
+      image: "certificates/images/Joy of computing using python nptel.png"
     },
     {
       id: 7,
@@ -2230,7 +2236,8 @@ function App() {
       issuer: "Infosys Springboard",
       description: "AI Fundamentals",
       icon: "fas fa-robot",
-      file: "Introduction to artificial Intelligence infosys.pdf"
+      file: "Introduction to artificial Intelligence infosys.pdf",
+      image: "certificates/images/Introduction to artificial Intelligence infosys.png"
     },
     {
       id: 8,
@@ -2238,7 +2245,8 @@ function App() {
       issuer: "Infosys Springboard",
       description: "Deep Learning Fundamentals",
       icon: "fas fa-brain",
-      file: "Introduction to Deep Learning infosys.pdf"
+      file: "Introduction to Deep Learning infosys.pdf",
+      image: "certificates/images/Introduction to Deep Learning infosys.png"
     },
     {
       id: 9,
@@ -2246,7 +2254,8 @@ function App() {
       issuer: "Infosys Springboard",
       description: "Python Programming",
       icon: "fab fa-python",
-      file: "Introduction to python infosys.pdf"
+      file: "Introduction to python infosys.pdf",
+      image: "certificates/images/Introduction to python infosys.png"
     }
   ];
 
@@ -2461,7 +2470,7 @@ function App() {
                       </div>
                       <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all"></i>
                     </div>
-                    <h3 className="text-4xl font-bold mb-2">4</h3>
+                    <h3 className="text-4xl font-bold mb-2">9</h3>
                     <p className="text-gray-400 font-medium">CERTIFICATES</p>
                     <p className="text-sm text-gray-500">Professional skills validated</p>
                   </div>
@@ -2588,18 +2597,41 @@ function App() {
                       }}
                     >
                       <div className="p-3 sm:p-4 md:p-6 transform transition-transform duration-500 hover:scale-[1.02]">
-                        <div className="mb-2 sm:mb-4 text-xl sm:text-2xl md:text-4xl text-accent-purple">
-                          <i className={cert.icon}></i>
+                        {/* Certificate Image Preview */}
+                        <div className="relative w-full aspect-[4/3] mb-3 rounded-lg overflow-hidden">
+                          <img 
+                            src={`${baseUrl}/${cert.image}`} 
+                            alt={cert.title}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            onClick={() => openPdfViewer(`${baseUrl}/certificates/${cert.file}`)}
+                          />
                         </div>
-                        <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-1 sm:mb-2 line-clamp-2">{cert.title}</h3>
-                        <p className="text-xs sm:text-sm md:text-base text-gray-300 mb-1 sm:mb-2">{cert.issuer}</p>
-                        <p className="text-xs md:text-sm text-gray-400 mb-2 sm:mb-4 line-clamp-2">{cert.description}</p>
-                        <button 
-                          onClick={() => openPdfViewer(`${baseUrl}/certificates/${cert.file}`)}
-                          className="btn btn-primary w-full text-xs sm:text-sm md:text-base py-2 px-3 sm:py-2 sm:px-4"
-                        >
-                          <i className="fas fa-eye mr-1 sm:mr-2"></i> View Certificate
-                        </button>
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-accent-purple/10 flex items-center justify-center text-accent-purple">
+                            <i className={`${cert.icon} text-lg sm:text-xl`}></i>
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-base sm:text-lg font-semibold line-clamp-1">{cert.title}</h3>
+                            <p className="text-xs sm:text-sm text-gray-300">{cert.issuer}</p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-400 mb-3 line-clamp-2">{cert.description}</p>
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => openPdfViewer(`${baseUrl}/certificates/${cert.file}`)}
+                            className="flex-1 btn btn-primary text-xs sm:text-sm py-2"
+                          >
+                            <i className="fas fa-eye mr-1"></i> View
+                          </button>
+                          <a 
+                            href={`${baseUrl}/certificates/${cert.file}`}
+                            download
+                            className="btn btn-secondary text-xs sm:text-sm py-2 px-3"
+                            title="Download PDF"
+                          >
+                            <i className="fas fa-download"></i>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   ))}
