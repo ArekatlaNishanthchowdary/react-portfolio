@@ -2587,18 +2587,18 @@ function App() {
                         animationDelay: `${index * 0.3}s`
                       }}
                     >
-                      <div className="p-4 md:p-6 transform transition-transform duration-500 hover:scale-[1.02]">
-                        <div className="mb-4 text-2xl md:text-4xl text-accent-purple">
+                      <div className="p-3 sm:p-4 md:p-6 transform transition-transform duration-500 hover:scale-[1.02]">
+                        <div className="mb-2 sm:mb-4 text-xl sm:text-2xl md:text-4xl text-accent-purple">
                           <i className={cert.icon}></i>
                         </div>
-                        <h3 className="text-lg md:text-xl font-semibold mb-2">{cert.title}</h3>
-                        <p className="text-sm md:text-base text-gray-300 mb-2">{cert.issuer}</p>
-                        <p className="text-xs md:text-sm text-gray-400 mb-4">{cert.description}</p>
+                        <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-1 sm:mb-2 line-clamp-2">{cert.title}</h3>
+                        <p className="text-xs sm:text-sm md:text-base text-gray-300 mb-1 sm:mb-2">{cert.issuer}</p>
+                        <p className="text-xs md:text-sm text-gray-400 mb-2 sm:mb-4 line-clamp-2">{cert.description}</p>
                         <button 
                           onClick={() => openPdfViewer(`${baseUrl}/certificates/${cert.file}`)}
-                          className="btn btn-primary w-full text-sm md:text-base"
+                          className="btn btn-primary w-full text-xs sm:text-sm md:text-base py-2 px-3 sm:py-2 sm:px-4"
                         >
-                          <i className="fas fa-eye mr-2"></i> View Certificate
+                          <i className="fas fa-eye mr-1 sm:mr-2"></i> View Certificate
                         </button>
                       </div>
                     </div>
